@@ -46,6 +46,7 @@
           p.fficxx-runtime
           p.stdcxx
           p.dotgen
+          p.optparse-applicative
         ]);
         pyenv =
           pkgs.python3.withPackages
