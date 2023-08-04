@@ -16,7 +16,16 @@
     fficxx,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {inherit system;};
+      pkgs = import nixpkgs {
+        inherit system;
+        config  = {
+          packageOverrides = self: {
+            imgui = self.callPackage ./imgui/default.nix {
+              frameworks = self.darwin.apple_sdk.frameworks;
+            };
+          };
+        };
+      };
 
       haskellOverlay = final: hself: hsuper: {};
       #  (import ./default.nix { pkgs = final; } hself hsuper);
@@ -80,8 +89,10 @@
       supportedCompilers = ["ghc927" "ghc945" "ghc962"];
     in {
       packages =
-        pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
-
+        pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler)
+        // { imgui = pkgs.imgui; }
+        ;
+ 
       inherit haskellOverlay;
 
       devShells =

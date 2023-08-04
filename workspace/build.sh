@@ -5,7 +5,7 @@ cabal build fficxx
 cabal build stdcxx
 
 rm ../Gen.o
-cabal exec -- ghc ../Gen.hs
+cabal exec -- ghc ../Gen.hs -package optparse-applicative
 ../Gen gen
 
 cabal build imgui

@@ -106,11 +106,15 @@ cabal =
       cabal_cheaderprefix = "ImGui",
       cabal_moduleprefix = "ImGui",
       cabal_additional_c_incs = [],
-      cabal_additional_c_srcs = [],
+      cabal_additional_c_srcs = [
+--         AddCSrc "/nix/store/x82169nxf99amg73d2rqbaan0bkrcbji-imgui-1.89.7/include/imgui/imgui.cpp" ""
+      ],
       cabal_additional_pkgdeps = [CabalName "stdcxx"],
       cabal_license = Just "BSD-3-Clause",
       cabal_licensefile = Just "LICENSE",
-      cabal_extraincludedirs = [],
+      cabal_extraincludedirs = [
+        "/nix/store/x82169nxf99amg73d2rqbaan0bkrcbji-imgui-1.89.7/include/imgui"
+      ],
       cabal_extralibdirs = [],
       cabal_extrafiles = [],
       cabal_pkg_config_depends = [],
