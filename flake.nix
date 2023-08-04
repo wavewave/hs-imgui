@@ -18,7 +18,7 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
-        config  = {
+        config = {
           packageOverrides = self: {
             imgui = self.callPackage ./imgui/default.nix {
               frameworks = self.darwin.apple_sdk.frameworks;
@@ -83,6 +83,7 @@
             ];
           shellHook = ''
             export PS1="\n[hs-imgui:\w]$ \0"
+            export DYLD_LIBRARY_PATH=${pkgs.imgui}/lib:$DYLD_LIBRARY_PATH
           '';
         };
 
@@ -90,9 +91,8 @@
     in {
       packages =
         pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler)
-        // { imgui = pkgs.imgui; }
-        ;
- 
+        // {imgui = pkgs.imgui;};
+
       inherit haskellOverlay;
 
       devShells =
