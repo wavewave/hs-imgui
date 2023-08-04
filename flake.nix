@@ -63,7 +63,7 @@
               pkgs.pkgconfig
               pkgs.graphviz
               # this is due to https://github.com/NixOS/nixpkgs/issues/140774
-              (hpkgsFor "ghc924").ormolu
+              (hpkgsFor "ghc927").ormolu
             ]
             ++ pkgs.lib.optional pkgs.stdenv.isLinux pkgs.mesa
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
@@ -77,7 +77,7 @@
           '';
         };
 
-      supportedCompilers = ["ghc902" "ghc924" "ghc942"];
+      supportedCompilers = ["ghc927" "ghc945" "ghc962"];
     in {
       packages =
         pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
