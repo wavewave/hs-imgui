@@ -38,6 +38,7 @@ import FFICXX.Generate.Type.Class
   ( Arg (..),
     CTypes (CTDouble),
     Class (..),
+    EnumType (..),
     Function (..),
     ProtectedMethod (..),
     TLOrdinary (..),
@@ -116,11 +117,11 @@ cabal =
       cabal_buildType = Simple
     }
 
-imVector :: Class
-imVector =
+imGuiTextBuffer :: Class
+imGuiTextBuffer =
   Class
     cabal
-    "ImVector"
+    "ImGuiTextBuffer"
     [deletable]
     mempty
     Nothing
@@ -132,7 +133,11 @@ imVector =
     False
 
 classes =
-  [ imVector
+  [ imGuiTextBuffer
+  ]
+
+enums =
+  [
   ]
 
 toplevelfunctions :: [TopLevel]
@@ -143,7 +148,7 @@ toplevelfunctions =
 templates = []
 
 headers =
-  [ modImports "ImVector" [] ["imgui.h"]
+  [ modImports "ImGuiTextBuffer" [] ["imgui/imgui.h"]
   ]
 
 extraLib = []
@@ -199,6 +204,7 @@ main = do
                 sbcModUnitMap = ModuleUnitMap (HM.fromList headers),
                 sbcCabal = cabal,
                 sbcClasses = classes,
+                sbcEnums = enums,
                 sbcTopLevels = toplevelfunctions,
                 sbcTemplates = templates,
                 sbcExtraLibs = extraLib,

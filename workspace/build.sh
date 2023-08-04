@@ -1,7 +1,12 @@
 #!/bin/sh
 
+cabal build fficxx-runtime
+cabal build fficxx
+cabal build stdcxx
+
 rm ../Gen.o
-ghc ../Gen.hs
+cabal exec -- ghc ../Gen.hs
 ../Gen gen
+
 cabal build imgui
 
