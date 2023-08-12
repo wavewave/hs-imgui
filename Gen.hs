@@ -132,12 +132,50 @@ imGuiTextBuffer =
     []
     False
 
+imGuiWindowFlags_ :: EnumType
+imGuiWindowFlags_ =
+  EnumType
+    { enum_name = "ImGuiWindowFlags_",
+      enum_cases =
+        [ "ImGuiWindowFlags_None",
+          "ImGuiWindowFlags_NoTitleBar",
+          "ImGuiWindowFlags_NoResize",
+          "ImGuiWindowFlags_NoMove",
+          "ImGuiWindowFlags_NoScrollbar",
+          "ImGuiWindowFlags_NoScrollWithMouse",
+          "ImGuiWindowFlags_NoCollapse",
+          "ImGuiWindowFlags_AlwaysAutoResize",
+          "ImGuiWindowFlags_NoBackground",
+          "ImGuiWindowFlags_NoSavedSettings",
+          "ImGuiWindowFlags_NoMouseInputs",
+          "ImGuiWindowFlags_MenuBar",
+          "ImGuiWindowFlags_HorizontalScrollbar",
+          "ImGuiWindowFlags_NoFocusOnAppearing",
+          "ImGuiWindowFlags_NoBringToFrontOnFocus",
+          "ImGuiWindowFlags_AlwaysVerticalScrollbar",
+          "ImGuiWindowFlags_AlwaysHorizontalScrollbar",
+          "ImGuiWindowFlags_AlwaysUseWindowPadding",
+          "ImGuiWindowFlags_NoNavInputs",
+          "ImGuiWindowFlags_NoNavFocus",
+          "ImGuiWindowFlags_UnsavedDocument",
+          "ImGuiWindowFlags_NoNav",
+          "ImGuiWindowFlags_NoDecoration",
+          "ImGuiWindowFlags_NoInputs",
+          "ImGuiWindowFlags_NavFlattened",
+          "ImGuiWindowFlags_ChildWindow",
+          "ImGuiWindowFlags_Tooltip",
+          "ImGuiWindowFlags_Popup",
+          "ImGuiWindowFlags_Modal",
+          "ImGuiWindowFlags_ChildMenu"
+        ]
+    }
+
 classes =
   [ imGuiTextBuffer
   ]
 
 enums =
-  [
+  [ imGuiWindowFlags_
   ]
 
 toplevelfunctions :: [TopLevel]

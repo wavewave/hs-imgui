@@ -10,3 +10,5 @@ cabal exec -- ghc ../Gen.hs -package optparse-applicative
 
 cabal build imgui
 
+
+cabal exec -- ghc test.hs -limgui
