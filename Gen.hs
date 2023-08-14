@@ -18,6 +18,7 @@ import FFICXX.Generate.Code.Primitive
     cstring_,
     double,
     double_,
+    float,
     int,
     int_,
     uint,
@@ -212,11 +213,27 @@ imGuiWindowFlags_ =
       enum_header = "imgui.h"
     }
 
+imVec4 :: Class
+imVec4 =
+  Class
+    cabal
+    "ImVec4"
+    [deletable]
+    mempty
+    Nothing
+    [ Constructor [] (Just "newImVec4_"),
+      Constructor [float "x", float "y", float "z", float "w"] Nothing
+    ]
+    []
+    []
+    False
+
 classes =
   [ gLFWwindow,
     imGuiContext,
     imGuiIO,
-    imGuiTextBuffer
+    imGuiTextBuffer,
+    imVec4
   ]
 
 enums =
@@ -252,7 +269,8 @@ headers =
     modImports "GLFWwindow" [] ["backends/imgui_impl_glfw.h"],
     modImports "ImGuiContext" [] ["imgui.h"],
     modImports "ImGuiIO" [] ["imgui.h"],
-    modImports "ImGuiTextBuffer" [] ["imgui.h"]
+    modImports "ImGuiTextBuffer" [] ["imgui.h"],
+    modImports "ImVec4" [] ["imgui.h"]
   ]
 
 extraLib = []

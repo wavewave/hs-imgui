@@ -1,13 +1,17 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+import Control.Monad.Extra (whileM)
 import Data.String (IsString (..))
 import Foreign.C.String (CString, newCString)
-import Foreign.Marshal.Utils (fromBool)
+import Foreign.C.Types (CBool (..))
+import Foreign.Marshal.Alloc (alloca)
+import Foreign.Marshal.Utils (fromBool, toBool)
 import Foreign.Ptr (Ptr)
+import Foreign.Storable (poke)
 import ImGui
-import ImGui.Enum -- (c_test, c_test2) --  (c_none, c_notitlebar)
-import System.IO.Unsafe      ( unsafePerformIO )
+import ImGui.Enum
+import System.IO.Unsafe (unsafePerformIO)
 
 foreign import ccall unsafe "glfw_initialize"
   c_glfw_initialize :: IO GLFWwindow
@@ -19,7 +23,10 @@ foreign import ccall unsafe "imgui_io_shim"
   c_imgui_io_shim :: ImGuiIO -> IO ()
 
 foreign import ccall unsafe "imgui_main"
-  c_imgui_main :: GLFWwindow -> ImGuiIO -> IO ()
+  c_imgui_main :: GLFWwindow -> ImGuiIO -> ImVec4 -> Ptr CBool -> Ptr CBool -> IO ()
+
+foreign import ccall unsafe "glfwWindowShouldClose"
+  c_glfwWindowShouldClose :: GLFWwindow -> IO CBool
 
 instance IsString CString where
   fromString s = unsafePerformIO $ newCString s
@@ -41,8 +48,17 @@ main = do
   imGui_ImplOpenGL3_Init glsl_version
 
   c_imgui_io_shim io
-  -- main loop
-  c_imgui_main window io
+
+  -- Our state
+  clear_color <- newImVec4 0.45 0.55 0.60 1.00
+  alloca $ \p_showDemoWindow ->
+    alloca $ \p_showAnotherWindow -> do
+      poke p_showDemoWindow (fromBool True)
+      poke p_showAnotherWindow (fromBool False)
+      -- main loop
+      whileM $ do
+        c_imgui_main window io clear_color p_showDemoWindow p_showAnotherWindow
+        not . toBool <$> c_glfwWindowShouldClose window
 
   -- Cleanup
   imGui_ImplOpenGL3_Shutdown

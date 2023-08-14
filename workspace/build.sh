@@ -7,5 +7,5 @@ cabal build fficxx-runtime && \
   ../Gen gen && \
   cabal build imgui && \
   c++ -c shim.cpp `pkg-config --cflags libimgui` && \
-  cabal exec -- ghc test.hs shim.o  -framework OpenGL -lglfw && \
+  cabal exec -- ghc test.hs shim.o  -framework OpenGL -lglfw -package extra && \
   ./test
