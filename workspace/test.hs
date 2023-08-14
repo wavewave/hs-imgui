@@ -12,7 +12,7 @@ foreign import ccall unsafe "glfw_finalize"
   c_glfw_finalize :: Ptr () -> IO ()
 
 foreign import ccall unsafe "imgui_main"
-  c_imgui_main :: Ptr () -> IO ()
+  c_imgui_main :: Ptr () -> ImGuiIO -> IO ()
 
 main :: IO ()
 main = do
@@ -27,5 +27,8 @@ main = do
   pure ()
  -}
   window <- c_glfw_initialize
-  c_imgui_main window
+  ctxt <- createContext
+  io <- getIO
+  -- let RawIO p_io
+  c_imgui_main window io
   c_glfw_finalize window

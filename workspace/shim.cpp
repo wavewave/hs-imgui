@@ -43,12 +43,13 @@ void glfw_finalize(GLFWwindow* window) {
 
 }
 
-void imgui_main(GLFWwindow* window) {
+void imgui_main(GLFWwindow* window, ImGuiIO* p_io) {
     const char* glsl_version = "#version 150";
     // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //IMGUI_CHECKVERSION();
+    //ImGui::CreateContext();
+    // ImGuiIO& io = ImGui::GetIO(); // (void)io;
+    ImGuiIO& io = (*p_io);
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 

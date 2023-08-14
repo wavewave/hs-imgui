@@ -12,6 +12,7 @@ import FFICXX.Generate.Code.Primitive
     charpp,
     cppclass,
     cppclass_,
+    cppclassref_,
     cstring,
     cstring_,
     double,
@@ -117,6 +118,32 @@ cabal =
       cabal_buildType = Simple
     }
 
+imGuiContext :: Class
+imGuiContext =
+  Class
+    cabal
+    "ImGuiContext"
+    []
+    mempty
+    Nothing
+    []
+    []
+    []
+    False
+
+imGuiIO :: Class
+imGuiIO =
+  Class
+    cabal
+    "ImGuiIO"
+    []
+    mempty
+    Nothing
+    []
+    []
+    []
+    False
+
 imGuiTextBuffer :: Class
 imGuiTextBuffer =
   Class
@@ -172,7 +199,9 @@ imGuiWindowFlags_ =
     }
 
 classes =
-  [ imGuiTextBuffer
+  [ imGuiContext,
+    imGuiIO,
+    imGuiTextBuffer
   ]
 
 enums =
@@ -181,13 +210,22 @@ enums =
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
-  [
+  [ TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing)
   ]
 
 templates = []
 
 headers =
-  [ modImports "ImGuiTextBuffer" [] ["imgui/imgui.h"]
+  [ ( MU_TopLevel,
+      ModuleUnitImports
+        { muimports_namespaces = ["ImGui"],
+          muimports_headers = ["imgui/imgui.h"]
+        }
+    ),
+    modImports "ImGuiContext" [] ["imgui/imgui.h"],
+    modImports "ImGuiIO" [] ["imgui/imgui.h"],
+    modImports "ImGuiTextBuffer" [] ["imgui/imgui.h"]
   ]
 
 extraLib = ["imgui"]
