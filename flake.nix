@@ -84,6 +84,7 @@
           shellHook = ''
             export PS1="\n[hs-imgui:\w]$ \0"
             export DYLD_LIBRARY_PATH=${pkgs.imgui}/lib:$DYLD_LIBRARY_PATH
+            export IMGUI=${pkgs.imgui}
           '';
         };
 
