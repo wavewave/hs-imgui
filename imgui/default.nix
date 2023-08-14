@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     $CXX -std=c++11 -I. -I./backends -c imgui_widgets.cpp
     $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_glfw.cpp
     $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_opengl3.cpp
-    $CXX -dynamiclib -undefined suppress -flat_namespace -o libimgui.dylib imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_glfw.o imgui_impl_opengl3.o
+    $CXX -dynamiclib -undefined suppress -flat_namespace -install_name $out/lib/libimgui.dylib -o libimgui.dylib imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_glfw.o imgui_impl_opengl3.o
   '';
 
   installPhase = ''
