@@ -16,19 +16,10 @@ foreign import ccall unsafe "imgui_main"
 
 main :: IO ()
 main = do
-  print (fromEnum ImGuiWindowFlags_None)
-  print (fromEnum ImGuiWindowFlags_NoTitleBar)
-  print (fromEnum ImGuiWindowFlags_NoResize)
-  print (fromEnum ImGuiWindowFlags_NoMove)
-  {- x <- newImGuiTextBuffer
-  print c_test
-  print c_test2
---   print c_notitlebar
-  pure ()
- -}
   window <- c_glfw_initialize
   ctxt <- createContext
   io <- getIO
-  -- let RawIO p_io
+  styleColorsLight
   c_imgui_main window io
+  destroyContext ctxt
   c_glfw_finalize window

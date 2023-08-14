@@ -2,6 +2,7 @@
   stdenv,
   lib,
   fetchFromGitHub,
+  pkg-config,
   frameworks,
   glfw,
 }:
@@ -15,6 +16,8 @@ stdenv.mkDerivation rec {
     rev = "v${version}";
     sha256 = "sha256-Ha70CTSBpyF9S+/qG9lAhUlUT4vY0crOoi3vFsy65H8=";
   };
+
+  nativeBuildInputs = [ pkg-config ];
 
   buildInputs = [
     glfw
@@ -36,12 +39,20 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/include/imgui
-    mkdir -p $out/include/imgui/backends
     mkdir -p $out/lib
     cp *.h $out/include/imgui
-    cp backends/*.h $out/include/imgui/
+    cp -a backends $out/include/imgui/
     cp -a misc $out/include/imgui/
     cp libimgui.dylib $out/lib
+
+    mkdir -p $out/lib/pkgconfig
+    cat >> $out/lib/pkgconfig/libimgui.pc << EOF
+    Name: libimgui
+    Description: Dear ImGui
+    Version: ${version}
+    Libs: -L$out/lib -limgui
+    Cflags: -I$out/include/imgui
+    EOF
   '';
 
   meta = with lib; {

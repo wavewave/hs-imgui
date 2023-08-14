@@ -114,9 +114,22 @@ cabal =
       cabal_extraincludedirs = [],
       cabal_extralibdirs = [],
       cabal_extrafiles = [],
-      cabal_pkg_config_depends = [],
+      cabal_pkg_config_depends = ["libimgui"],
       cabal_buildType = Simple
     }
+
+gLFWwindow :: Class
+gLFWwindow =
+  Class
+    cabal
+    "GLFWwindow"
+    []
+    mempty
+    Nothing
+    []
+    []
+    []
+    False
 
 imGuiContext :: Class
 imGuiContext =
@@ -195,11 +208,12 @@ imGuiWindowFlags_ =
           "ImGuiWindowFlags_Modal",
           "ImGuiWindowFlags_ChildMenu"
         ],
-      enum_header = "imgui/imgui.h"
+      enum_header = "imgui.h"
     }
 
 classes =
-  [ imGuiContext,
+  [ gLFWwindow,
+    imGuiContext,
     imGuiIO,
     imGuiTextBuffer
   ]
@@ -211,7 +225,10 @@ enums =
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
   [ TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing)
+    TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
+    TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing)
   ]
 
 templates = []
@@ -220,15 +237,16 @@ headers =
   [ ( MU_TopLevel,
       ModuleUnitImports
         { muimports_namespaces = ["ImGui"],
-          muimports_headers = ["imgui/imgui.h"]
+          muimports_headers = ["imgui.h"]
         }
     ),
-    modImports "ImGuiContext" [] ["imgui/imgui.h"],
-    modImports "ImGuiIO" [] ["imgui/imgui.h"],
-    modImports "ImGuiTextBuffer" [] ["imgui/imgui.h"]
+    modImports "GLFWwindow" [] ["backends/imgui_impl_glfw.h"],
+    modImports "ImGuiContext" [] ["imgui.h"],
+    modImports "ImGuiIO" [] ["imgui.h"],
+    modImports "ImGuiTextBuffer" [] ["imgui.h"]
   ]
 
-extraLib = ["imgui"]
+extraLib = []
 
 extraDep = []
 
