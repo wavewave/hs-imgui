@@ -43,8 +43,7 @@ void glfw_finalize(GLFWwindow* window) {
 
 }
 
-void imgui_main(GLFWwindow* window, ImGuiIO* p_io) {
-    const char* glsl_version = "#version 150";
+void imgui_io_shim(ImGuiIO* p_io) {
     // Setup Dear ImGui context
     //IMGUI_CHECKVERSION();
     //ImGui::CreateContext();
@@ -52,14 +51,6 @@ void imgui_main(GLFWwindow* window, ImGuiIO* p_io) {
     ImGuiIO& io = (*p_io);
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-    // Setup Dear ImGui style
-    // ImGui::StyleColorsDark();
-    // ImGui::StyleColorsLight();
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -77,6 +68,10 @@ void imgui_main(GLFWwindow* window, ImGuiIO* p_io) {
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
+}
+
+void imgui_main(GLFWwindow* window, ImGuiIO* p_io) {
+    ImGuiIO& io = (*p_io);
 
     // Our state
     bool show_demo_window = true;
@@ -147,10 +142,6 @@ void imgui_main(GLFWwindow* window, ImGuiIO* p_io) {
         glfwSwapBuffers(window);
     }
 
-    // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    // ImGui::DestroyContext();
 
 }
 

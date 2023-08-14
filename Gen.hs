@@ -8,7 +8,8 @@ import Data.Maybe (fromMaybe)
 import Data.Tree (drawForest)
 import FFICXX.Generate.Builder (simpleBuilder)
 import FFICXX.Generate.Code.Primitive
-  ( bool_,
+  ( bool,
+    bool_,
     charpp,
     cppclass,
     cppclass_,
@@ -228,7 +229,11 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing)
+    TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "ImGui_ImplGlfw_InitForOpenGL" [cppclass gLFWwindow "window", bool "install_callbacks"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_Shutdown" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "ImGui_ImplOpenGL3_Init" [cstring "glsl_version"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing)
   ]
 
 templates = []
@@ -237,7 +242,11 @@ headers =
   [ ( MU_TopLevel,
       ModuleUnitImports
         { muimports_namespaces = ["ImGui"],
-          muimports_headers = ["imgui.h"]
+          muimports_headers =
+            [ "imgui.h",
+              "backends/imgui_impl_glfw.h",
+              "backends/imgui_impl_opengl3.h"
+            ]
         }
     ),
     modImports "GLFWwindow" [] ["backends/imgui_impl_glfw.h"],
