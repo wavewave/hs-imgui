@@ -271,6 +271,18 @@ showExampleAppCustomRendering colf = do
       let x'' = x + m * (sz + spacing)
       drawShape (x'', y'')
 
+    dummy_sz <- newImVec2 ((sz + spacing) * 11.2) ((sz + spacing) * 3.0)
+    dummy dummy_sz
+    textUnformatted ("dummy takes space like this" :: CString)
+
+    p' <- getCursorScreenPos
+    px' <- imVec2_x_get p'
+    py' <- imVec2_y_get p'
+    let x3 = px' + 4
+        y3 = py' + 4
+    v' <- newImVec2 x3 y3
+    imDrawList_AddText draw_list v' col ("This is drawn using AddText!" :: CString)
+
     popItemWidth
     endTabItem
   whenM (toBool <$> beginTabItem ("Canvas" :: CString)) $ do

@@ -198,6 +198,7 @@ imDrawList =
       NonVirtual void_ "AddCircleFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,
       NonVirtual void_ "AddNgon" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing,
       NonVirtual void_ "AddNgonFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,
+      NonVirtual void_ "AddText" [cppclassref imVec2 "pos", uint "col", cstring "text_begin"] Nothing,
       -- first arg is ImVec2* points
       NonVirtual void_ "AddPolyline" [cppclass imVec2 "points", int "num_points", uint "col", int "flags", float "thinkness"] Nothing,
       NonVirtual void_ "AddBezierCubic" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", cppclassref imVec2 "p4", uint "col", float "thickness", int "num_segments"] Nothing,
@@ -411,6 +412,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction float_ "GetFrameHeight" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "Render" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "SameLine" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "Dummy" [cppclassref imVec2 "size"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "SliderFloat" [cstring "label", star CTFloat "v", float "v_min", float "v_max"] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
