@@ -13,12 +13,15 @@ import FFICXX.Generate.Code.Primitive
     charpp,
     cppclass,
     cppclass_,
+    cppclasscopy_,
+    cppclassref,
     cppclassref_,
     cstring,
     cstring_,
     double,
     double_,
     float,
+    float_,
     int,
     int_,
     star,
@@ -147,6 +150,21 @@ gLFWwindow =
     []
     False
 
+imColor :: Class
+imColor =
+  Class
+    cabal
+    "ImColor"
+    []
+    mempty
+    Nothing
+    [ Constructor [] (Just "newImColor_"),
+      Constructor [cppclassref imVec4 "col"] Nothing
+    ]
+    []
+    []
+    False
+
 imDrawData :: Class
 imDrawData =
   Class
@@ -157,6 +175,20 @@ imDrawData =
     Nothing
     [ Constructor [] Nothing,
       NonVirtual void_ "Clear" [] Nothing
+    ]
+    []
+    []
+    False
+
+imDrawList :: Class
+imDrawList =
+  Class
+    cabal
+    "ImDrawList"
+    [deletable]
+    mempty
+    Nothing
+    [ NonVirtual void_ "AddCircle" [cppclassref imVec2 "center", float "radius", int "col", int "num_segments", float "thickness"] Nothing
     ]
     []
     []
@@ -204,6 +236,29 @@ imGuiTextBuffer =
     []
     []
     False
+
+imDrawFlags_ :: EnumType
+imDrawFlags_ =
+  EnumType
+    { enum_name = "ImDrawFlags_",
+      enum_cases =
+        [ "ImDrawFlags_None",
+          "ImDrawFlags_Closed",
+          "ImDrawFlags_RoundCornersTopLeft",
+          "ImDrawFlags_RoundCornersTopRight",
+          "ImDrawFlags_RoundCornersBottomLeft",
+          "ImDrawFlags_RoundCornersBottomRight",
+          "ImDrawFlags_RoundCornersNone",
+          "ImDrawFlags_RoundCornersTop",
+          "ImDrawFlags_RoundCornersBottom",
+          "ImDrawFlags_RoundCornersLeft",
+          "ImDrawFlags_RoundCornersRight",
+          "ImDrawFlags_RoundCornersAll",
+          "ImDrawFlags_RoundCornersDefault_",
+          "ImDrawFlags_RoundCornersMask_"
+        ],
+      enum_header = "imgui.h"
+    }
 
 imGuiConfigFlags_ :: EnumType
 imGuiConfigFlags_ =
@@ -262,6 +317,23 @@ imGuiWindowFlags_ =
       enum_header = "imgui.h"
     }
 
+imVec2 :: Class
+imVec2 =
+  Class
+    cabal
+    "ImVec2"
+    [deletable]
+    mempty
+    Nothing
+    [ Constructor [] (Just "newImVec2_"),
+      Constructor [float "x", float "y"] Nothing
+    ]
+    [ Variable (float "x"),
+      Variable (float "y")
+    ]
+    []
+    False
+
 imVec4 :: Class
 imVec4 =
   Class
@@ -284,30 +356,53 @@ imVec4 =
 classes =
   [ gLFWmonitor,
     gLFWwindow,
+    imColor,
     imDrawData,
+    imDrawList,
     imGuiContext,
     imGuiIO,
     imGuiTextBuffer,
+    imVec2,
     imVec4
   ]
 
 enums =
-  [ imGuiConfigFlags_,
+  [ imDrawFlags_,
+    imGuiConfigFlags_,
     imGuiWindowFlags_
   ]
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
   [ TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "BeginTabBar" [cstring "str_id"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "BeginTabItem" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
+
+
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
+
     TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
     TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "EndTabBar" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "EndTabItem" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
+
+    TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "PushItemWidth" [float "item_width"] Nothing),
+    TLOrdinary (TopLevelFunction float_ "CalcItemWidth" [] Nothing),
+
+    TLOrdinary (TopLevelFunction float_ "GetFontSize" [] Nothing),
+    TLOrdinary (TopLevelFunction float_ "GetFrameHeight" [] Nothing),
+
+
+
     TLOrdinary (TopLevelFunction void_ "Render" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "SameLine" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
@@ -337,9 +432,7 @@ toplevelfunctions =
     -- GL functions
     TLOrdinary (TopLevelFunction void_ "glClear" [int "mask"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)
-
-  ]
+    TLOrdinary (TopLevelFunction void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)]
 
 templates = []
 
@@ -356,10 +449,13 @@ headers =
         }
     ),
     modImports "GLFWwindow" [] ["backends/imgui_impl_glfw.h"],
+    modImports "ImColor" [] ["imgui.h"],
     modImports "ImDrawData" [] ["imgui.h"],
+    modImports "ImDrawList" [] ["imgui.h"],
     modImports "ImGuiContext" [] ["imgui.h"],
     modImports "ImGuiIO" [] ["imgui.h"],
     modImports "ImGuiTextBuffer" [] ["imgui.h"],
+    modImports "ImVec2" [] ["imgui.h"],
     modImports "ImVec4" [] ["imgui.h"]
   ]
 

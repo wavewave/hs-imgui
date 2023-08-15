@@ -1,6 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+module Main where
+
 import Control.Monad.Extra (whenM, whileM)
 import Data.Bits ((.|.))
 import Data.IORef (modifyIORef', newIORef, readIORef)
@@ -158,4 +160,3 @@ main = do
 
   glfwDestroyWindow window
   glfwTerminate
-

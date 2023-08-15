@@ -6,5 +6,7 @@ cabal build fficxx-runtime && \
   cabal exec -- ghc ../Gen.hs -package optparse-applicative && \
   ../Gen gen && \
   cabal build imgui && \
-  cabal exec -- ghc test.hs -framework OpenGL -lglfw -package extra && \
-  ./test
+  #cabal exec -- ghc example.hs -framework OpenGL -lglfw -package extra && \
+  cabal exec -- ghc custom_rendering.hs -framework OpenGL -lglfw -package extra && \
+  #./example && \
+  ./custom_rendering
