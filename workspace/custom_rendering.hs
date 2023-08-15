@@ -226,6 +226,23 @@ showExampleAppCustomRendering colf = do
           imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
           delete v1
           delete v2
+        multiColorF (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + sz) (y' + sz)
+          let withColor r g b a f = do
+                colf <- newImVec4 r g b a
+                col_ <- newImColor colf
+                col <- c_toImU32 col_
+                f col
+                delete col_
+                delete colf
+          withColor 0 0 0 1 $ \col1 ->
+            withColor 1 0 0 1 $ \col2 ->
+              withColor 1 1 0 1 $ \col3 ->
+                withColor 0 1 0 1 $ \col4 ->
+                  imDrawList_AddRectFilledMultiColor draw_list v1 v2 col1 col2 col3 col4
+          delete v1
+          delete v2
 
         drawShapesFilled =
           [ -- N-gon
@@ -245,7 +262,9 @@ showExampleAppCustomRendering colf = do
             -- Vertical line (faster than AddLine, but only handle integer thickness)
             vertF,
             -- Pixel (faster than AddLine)
-            pixelF
+            pixelF,
+            -- gradient
+            multiColorF
           ]
     let y'' = y + 2 * (sz + spacing)
     for_ (zip [0 ..] drawShapesFilled) $ \(m, drawShape) -> do
