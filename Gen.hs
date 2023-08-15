@@ -452,12 +452,12 @@ headers =
           muimports_headers =
             [ "GLFW/glfw3.h",
               "imgui.h",
-              "backends/imgui_impl_glfw.h",
-              "backends/imgui_impl_opengl3.h"
+              "imgui_impl_glfw.h",
+              "imgui_impl_opengl3.h"
             ]
         }
     ),
-    modImports "GLFWwindow" [] ["backends/imgui_impl_glfw.h"],
+    modImports "GLFWwindow" [] ["imgui_impl_glfw.h"],
     modImports "ImColor" [] ["imgui.h"],
     modImports "ImDrawData" [] ["imgui.h"],
     modImports "ImDrawList" [] ["imgui.h"],

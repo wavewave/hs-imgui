@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/include/imgui
     mkdir -p $out/lib
     cp *.h $out/include/imgui
-    cp -a backends $out/include/imgui/
+    cp -a backends/*.h $out/include/imgui/
     cp -a misc $out/include/imgui/
     cp libimgui.dylib $out/lib
 

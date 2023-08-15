@@ -1,5 +1,5 @@
 {
-  description = "hgdal";
+  description = "hs-imgui";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/master";
     flake-utils.url = "github:numtide/flake-utils";
