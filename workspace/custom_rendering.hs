@@ -5,7 +5,7 @@ module Main where
 
 import Control.Monad.Extra (whenM, whileM)
 import Data.Bits ((.|.))
-import Data.Foldable (for_)
+import Data.Foldable (for_, traverse_)
 import Data.IORef (modifyIORef', newIORef, readIORef)
 import Data.String (IsString (..))
 import FFICXX.Runtime.Cast (FPtr (..))
@@ -15,7 +15,7 @@ import Foreign.Marshal.Alloc (alloca)
 import Foreign.Marshal.Array (allocaArray)
 import Foreign.Marshal.Utils (fromBool, toBool)
 import Foreign.Ptr (Ptr, castPtr, nullPtr)
-import Foreign.Storable (peek, poke)
+import Foreign.Storable (Storable (..))
 import ImGui
 import ImGui.Enum
 import ImGui.ImGuiIO.Implementation
@@ -26,6 +26,7 @@ import ImGui.ImGuiIO.Implementation
 import ImGui.ImVec2.Implementation (imVec2_x_get, imVec2_y_get)
 import ImGui.ImVec4.Implementation (imVec4_w_get, imVec4_x_get, imVec4_y_get, imVec4_z_get)
 import STD.Deletable (delete)
+import StorableInstances ()
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf (printf)
 
@@ -73,6 +74,7 @@ showExampleAppCustomRendering colf = do
           fromEnum ImDrawFlags_RoundCornersTopLeft
             .|. fromEnum ImDrawFlags_RoundCornersBottomRight
         rounding = sz / 5.0
+        curve_segments = 0
     colorEdit4 ("Color" :: CString) (castPtr (get_fptr colf))
     p <- getCursorScreenPos
     px <- imVec2_x_get p
@@ -125,7 +127,34 @@ showExampleAppCustomRendering colf = do
             imDrawList_AddLine draw_list v1 v2 col th
             delete v1
             delete v2
-
+          quadBezier (x', y') = do
+            p1 <- newImVec2 x' (y' + sz * 0.6)
+            p2 <- newImVec2 (x' + sz * 0.5) (y' - sz * 0.4)
+            p3 <- newImVec2 (x' + sz) (y' + sz)
+            imDrawList_AddBezierQuadratic draw_list p1 p2 p3 col th curve_segments
+            traverse_ delete [p1, p2, p3]
+          quadCubic (x', y') = do
+            p1 <- newImVec2 x' y'
+            p2 <- newImVec2 (x' + sz * 1.3) (y' + sz * 0.3)
+            p3 <- newImVec2 (x' + sz - sz * 1.3) (y' + sz - sz * 0.3)
+            p4 <- newImVec2 (x' + sz) (y' + sz)
+            imDrawList_AddBezierCubic draw_list p1 p2 p3 p4 col th curve_segments
+            traverse_ delete [p1, p2, p3, p4]
+          -- my new example
+          polyLine (x', y') =
+            let nElems = 4
+             in allocaArray nElems $ \(pp :: Ptr ImVec2) -> do
+                  p0 <- newImVec2 x' y'
+                  p1 <- newImVec2 (x' + sz * 1.3) (y' + sz * 0.3)
+                  p2 <- newImVec2 (x' + sz - sz * 1.3) (y' + sz - sz * 0.3)
+                  p3 <- newImVec2 (x' + sz) (y' + sz)
+                  pokeElemOff pp 0 p0
+                  pokeElemOff pp 1 p1
+                  pokeElemOff pp 2 p2
+                  pokeElemOff pp 3 p3
+                  let p :: ImVec2 = (cast_fptr_to_obj (castPtr pp))
+                  imDrawList_AddPolyline draw_list p (fromIntegral nElems) col 0 th
+                  traverse_ delete [p0, p1, p2, p3]
           drawShapes =
             [ -- N-gon
               ngon,
@@ -144,7 +173,13 @@ showExampleAppCustomRendering colf = do
               -- Vertical line (note: drawing a filled rectangle will be faster!)
               vert,
               -- Diagonal line
-              diag
+              diag,
+              -- Quadratic Bezier Curve (3 control points)
+              quadBezier,
+              -- Cubic Bezier Curve (4 control points)
+              quadCubic,
+              -- a new example with polyline
+              polyLine
             ]
 
       let y' = y + n * (sz + spacing)
