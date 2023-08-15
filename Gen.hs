@@ -171,7 +171,8 @@ imGuiIO =
     mempty
     Nothing
     []
-    [ Variable (float "Framerate")
+    [ Variable (int "ConfigFlags"),
+      Variable (float "Framerate")
     ]
     []
     False

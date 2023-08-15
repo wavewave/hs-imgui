@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Control.Monad.Extra (whenM, whileM)
+import Data.Bits ((.|.))
 import Data.IORef (modifyIORef', newIORef, readIORef)
 import Data.String (IsString (..))
 import FFICXX.Runtime.Cast (get_fptr)
@@ -13,16 +14,17 @@ import Foreign.Marshal.Utils (fromBool, toBool)
 import Foreign.Ptr (Ptr, castPtr, nullPtr)
 import Foreign.Storable (peek, poke)
 import ImGui
-import ImGui.ImGuiIO.Implementation (imGuiIO_Framerate_get)
+import ImGui.ImGuiIO.Implementation
+  ( imGuiIO_ConfigFlags_get,
+    imGuiIO_ConfigFlags_set,
+    imGuiIO_Framerate_get
+  )
 import ImGui.ImVec4.Implementation (imVec4_x_get, imVec4_y_get, imVec4_z_get, imVec4_w_get)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf (printf)
 
 foreign import ccall unsafe "glfw_initialize"
   c_glfw_initialize :: IO GLFWwindow
-
-foreign import ccall unsafe "imgui_io_shim"
-  c_imgui_io_shim :: ImGuiIO -> IO ()
 
 foreign import ccall unsafe "glfwWindowShouldClose"
   c_glfwWindowShouldClose :: GLFWwindow -> IO CBool
@@ -52,7 +54,10 @@ main = do
   imGui_ImplGlfw_InitForOpenGL window (fromBool True)
   imGui_ImplOpenGL3_Init glsl_version
 
-  c_imgui_io_shim io
+  flags <- imGuiIO_ConfigFlags_get io
+  -- Enable Keyboard Controls and Gamepad Controls
+  let flags' = flags .|. 1 {- NavEnableKeyboard -} .|. 2 {- NavEnableGamepad -}
+  imGuiIO_ConfigFlags_set io flags'
 
   -- Our state
   clear_color <- newImVec4 0.45 0.55 0.60 1.00
