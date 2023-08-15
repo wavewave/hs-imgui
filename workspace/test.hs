@@ -24,15 +24,6 @@ import ImGui.ImVec4.Implementation (imVec4_x_get, imVec4_y_get, imVec4_z_get, im
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf (printf)
 
-foreign import ccall unsafe "glfwWindowShouldClose"
-  c_glfwWindowShouldClose :: GLFWwindow -> IO CBool
-
-foreign import ccall unsafe "glfwPollEvents"
-  c_glfwPollEvents :: IO ()
-
-foreign import ccall unsafe "glfwSwapBuffers"
-  c_glfwSwapBuffers :: GLFWwindow -> IO ()
-
 instance IsString CString where
   fromString s = unsafePerformIO $ newCString s
 
@@ -92,7 +83,7 @@ main = do
           -- - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
           -- - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
           -- Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags
-          c_glfwPollEvents
+          glfwPollEvents
           -- Start the Dear ImGui frame
           imGui_ImplOpenGL3_NewFrame
           imGui_ImplGlfw_NewFrame
@@ -156,9 +147,9 @@ main = do
               glClearColor (x*w) (y*w) (z*w) w
               glClear 0x4000 {- GL_COLOR_BUFFER_BIT -}
           imGui_ImplOpenGL3_RenderDrawData =<< getDrawData
-          c_glfwSwapBuffers window
+          glfwSwapBuffers window
 
-          not . toBool <$> c_glfwWindowShouldClose window
+          not . toBool <$> glfwWindowShouldClose window
 
   -- Cleanup
   imGui_ImplOpenGL3_Shutdown

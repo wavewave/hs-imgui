@@ -328,9 +328,12 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height" ] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwInit" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwMakeContextCurrent" [cppclass gLFWwindow "window"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwPollEvents" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwSwapBuffers" [cppclass gLFWwindow "window"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwSwapInterval" [int "interval"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwTerminate" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwWindowHint" [int "hint", int "value"] Nothing),
+    TLOrdinary (TopLevelFunction int_ "glfwWindowShouldClose" [cppclass gLFWwindow "window"] Nothing),
     -- GL functions
     TLOrdinary (TopLevelFunction void_ "glClear" [int "mask"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
