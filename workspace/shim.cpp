@@ -78,14 +78,4 @@ void imgui_io_shim(ImGuiIO* p_io) {
     //IM_ASSERT(font != nullptr);
 }
 
-void imgui_main(GLFWwindow* window, ImGuiIO* p_io, ImVec4* clear_color, bool* p_show_demo_window, bool* p_show_another_window) {
-    ImGuiIO& io = (*p_io);
-
-
-}
-
-void draw_shim2 () {
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
 } /* extern "C" */

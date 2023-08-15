@@ -13,7 +13,7 @@ import Foreign.Marshal.Utils (fromBool, toBool)
 import Foreign.Ptr (Ptr, castPtr, nullPtr)
 import Foreign.Storable (peek, poke)
 import ImGui
-import ImGui.Enum
+import ImGui.ImGuiIO.Implementation (imGuiIO_Framerate_get)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf (printf)
 
@@ -35,14 +35,8 @@ foreign import ccall unsafe "glfwPollEvents"
 foreign import ccall unsafe "glfwSwapBuffers"
   c_glfwSwapBuffers :: GLFWwindow -> IO ()
 
-foreign import ccall unsafe "imgui_main"
-  c_imgui_main :: GLFWwindow -> ImGuiIO -> ImVec4 -> Ptr CBool -> Ptr CBool -> IO ()
-
 foreign import ccall unsafe "draw_shim"
   c_draw_shim :: GLFWwindow -> ImVec4 -> IO ()
-
-foreign import ccall unsafe "draw_shim2"
-  c_draw_shim2 :: IO ()
 
 instance IsString CString where
   fromString s = unsafePerformIO $ newCString s
@@ -115,7 +109,7 @@ main = do
           counter <- readIORef ref_counter
           withCString (printf "counter = %d" counter) $ \c_str ->
             textUnformatted c_str
-          framerate <- pure (100 :: Float)
+          framerate :: Float <- realToFrac <$> imGuiIO_Framerate_get io
           withCString (printf "Application average %.3f ms/frame (%.1f FPS)" (1000.0 / framerate) framerate) $ \c_str ->
             textUnformatted c_str
           end

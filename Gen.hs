@@ -171,7 +171,8 @@ imGuiIO =
     mempty
     Nothing
     []
-    []
+    [ Variable (float "Framerate")
+    ]
     []
     False
 
