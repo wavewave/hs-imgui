@@ -5,7 +5,7 @@ import Control.Monad.Extra (whenM, whileM)
 import Data.Bits ((.|.))
 import Data.IORef (modifyIORef', newIORef, readIORef)
 import Data.String (IsString (..))
-import FFICXX.Runtime.Cast (get_fptr)
+import FFICXX.Runtime.Cast (FPtr (..))
 import Foreign.C.String (CString, newCString, withCString)
 import Foreign.C.Types (CBool (..), CFloat)
 import Foreign.Marshal.Alloc (alloca)
@@ -24,9 +24,6 @@ import ImGui.ImVec4.Implementation (imVec4_x_get, imVec4_y_get, imVec4_z_get, im
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf (printf)
 
-foreign import ccall unsafe "glfw_initialize"
-  c_glfw_initialize :: IO GLFWwindow
-
 foreign import ccall unsafe "glfwWindowShouldClose"
   c_glfwWindowShouldClose :: GLFWwindow -> IO CBool
 
@@ -43,7 +40,23 @@ main :: IO ()
 main = do
   let glsl_version :: CString
       glsl_version = "#version 150"
-  window <- c_glfw_initialize
+  glfwInit
+  glfwWindowHint (0x22002 {- GLFW_CONTEXT_VERSION_MAJOR -}) 3
+  glfwWindowHint (0x22003 {- GLFW_CONTEXT_VERSION_MINOR -}) 2
+  -- 3.2+ only
+  glfwWindowHint (0x22008 {- GLFW_OPENGL_PROFILE -}) (0x32001 {- GLFW_OPENGL_CORE_PROFILE -})
+  -- Required on Mac
+  glfwWindowHint (0x22006 {- GLFW_OPENGL_FORWARD_COMPAT -}) (1 {- GL_TRUE -})
+  window :: GLFWwindow <-
+    glfwCreateWindow
+      1280
+      720
+      ("Dear ImGui GLFW+OpenGL3 example"::CString)
+      (cast_fptr_to_obj nullPtr :: GLFWmonitor)
+      (cast_fptr_to_obj nullPtr :: GLFWwindow)
+  glfwMakeContextCurrent window
+  -- Enable vsync
+  glfwSwapInterval 1
   ctxt <- createContext
   io <- getIO
 

@@ -121,6 +121,19 @@ cabal =
       cabal_buildType = Simple
     }
 
+gLFWmonitor :: Class
+gLFWmonitor =
+  Class
+    cabal
+    "GLFWmonitor"
+    []
+    mempty
+    Nothing
+    []
+    []
+    []
+    False
+
 gLFWwindow :: Class
 gLFWwindow =
   Class
@@ -269,7 +282,8 @@ imVec4 =
     False
 
 classes =
-  [ gLFWwindow,
+  [ gLFWmonitor,
+    gLFWwindow,
     imDrawData,
     imGuiContext,
     imGuiIO,
@@ -309,9 +323,14 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_RenderDrawData" [cppclass imDrawData "draw_data"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing),
     -- GLFW functions
+    TLOrdinary (TopLevelFunction (cppclass_ gLFWwindow) "glfwCreateWindow" [int "width", int "height", cstring "title", cppclass gLFWmonitor "monitor", cppclass gLFWwindow "share"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwDestroyWindow" [cppclass gLFWwindow "window"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height" ] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwInit" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwMakeContextCurrent" [cppclass gLFWwindow "window"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwSwapInterval" [int "interval"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwTerminate" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwWindowHint" [int "hint", int "value"] Nothing),
     -- GL functions
     TLOrdinary (TopLevelFunction void_ "glClear" [int "mask"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
