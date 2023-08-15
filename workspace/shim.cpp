@@ -37,25 +37,9 @@ GLFWwindow* glfw_initialize() {
     return window;
 }
 
-void glfw_finalize(GLFWwindow* window) {
-    glfwDestroyWindow(window);
-    glfwTerminate();
-
-}
-
-void draw_shim(GLFWwindow* window, ImVec4* clear_color) {
-    int display_w, display_h;
-    glfwGetFramebufferSize(window, &display_w, &display_h);
-    glViewport(0, 0, display_w, display_h);
-    glClearColor(clear_color->x * clear_color->w, clear_color->y * clear_color->w, clear_color->z * clear_color->w, clear_color->w);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-
 void imgui_io_shim(ImGuiIO* p_io) {
     // Setup Dear ImGui context
     //IMGUI_CHECKVERSION();
-    //ImGui::CreateContext();
-    // ImGuiIO& io = ImGui::GetIO(); // (void)io;
     ImGuiIO& io = (*p_io);
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls

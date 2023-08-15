@@ -14,14 +14,12 @@ import Foreign.Ptr (Ptr, castPtr, nullPtr)
 import Foreign.Storable (peek, poke)
 import ImGui
 import ImGui.ImGuiIO.Implementation (imGuiIO_Framerate_get)
+import ImGui.ImVec4.Implementation (imVec4_x_get, imVec4_y_get, imVec4_z_get, imVec4_w_get)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf (printf)
 
 foreign import ccall unsafe "glfw_initialize"
   c_glfw_initialize :: IO GLFWwindow
-
-foreign import ccall unsafe "glfw_finalize"
-  c_glfw_finalize :: GLFWwindow -> IO ()
 
 foreign import ccall unsafe "imgui_io_shim"
   c_imgui_io_shim :: ImGuiIO -> IO ()
@@ -34,9 +32,6 @@ foreign import ccall unsafe "glfwPollEvents"
 
 foreign import ccall unsafe "glfwSwapBuffers"
   c_glfwSwapBuffers :: GLFWwindow -> IO ()
-
-foreign import ccall unsafe "draw_shim"
-  c_draw_shim :: GLFWwindow -> ImVec4 -> IO ()
 
 instance IsString CString where
   fromString s = unsafePerformIO $ newCString s
@@ -125,7 +120,19 @@ main = do
 
           render
 
-          c_draw_shim window clear_color
+          -- c_draw_shim window clear_color
+          alloca $ \p_dispW ->
+            alloca $ \p_dispH -> do
+              glfwGetFramebufferSize window p_dispW p_dispH
+              dispW <- peek p_dispW
+              dispH <- peek p_dispH
+              glViewport 0 0 dispW dispH
+              x <- imVec4_x_get clear_color
+              y <- imVec4_y_get clear_color
+              z <- imVec4_z_get clear_color
+              w <- imVec4_w_get clear_color
+              glClearColor (x*w) (y*w) (z*w) w
+              glClear 0x4000 {- GL_COLOR_BUFFER_BIT -}
           imGui_ImplOpenGL3_RenderDrawData =<< getDrawData
           c_glfwSwapBuffers window
 
@@ -135,4 +142,7 @@ main = do
   imGui_ImplOpenGL3_Shutdown
   imGui_ImplGlfw_Shutdown
   destroyContext ctxt
-  c_glfw_finalize window
+
+  glfwDestroyWindow window
+  glfwTerminate
+

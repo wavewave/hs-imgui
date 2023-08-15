@@ -40,7 +40,7 @@ import FFICXX.Generate.Dependency.Graph
 import FFICXX.Generate.Type.Cabal (BuildType (..), Cabal (..), CabalName (..))
 import FFICXX.Generate.Type.Class
   ( Arg (..),
-    CTypes (CTBool, CTDouble, CTFloat),
+    CTypes (..),
     Class (..),
     EnumType (..),
     Function (..),
@@ -117,7 +117,7 @@ cabal =
       cabal_extraincludedirs = [],
       cabal_extralibdirs = [],
       cabal_extrafiles = [],
-      cabal_pkg_config_depends = ["libimgui"],
+      cabal_pkg_config_depends = ["libimgui", "glfw3"],
       cabal_buildType = Simple
     }
 
@@ -241,7 +241,11 @@ imVec4 =
     [ Constructor [] (Just "newImVec4_"),
       Constructor [float "x", float "y", float "z", float "w"] Nothing
     ]
-    []
+    [ Variable (float "x"),
+      Variable (float "y"),
+      Variable (float "z"),
+      Variable (float "w")
+    ]
     []
     False
 
@@ -283,7 +287,16 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction bool_ "ImGui_ImplOpenGL3_Init" [cstring "glsl_version"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_RenderDrawData" [cppclass imDrawData "draw_data"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing)
+    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing),
+    -- GLFW functions
+    TLOrdinary (TopLevelFunction void_ "glfwDestroyWindow" [cppclass gLFWwindow "window"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height" ] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwTerminate" [] Nothing),
+    -- GL functions
+    TLOrdinary (TopLevelFunction void_ "glClear" [int "mask"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)
+
   ]
 
 templates = []
@@ -293,7 +306,8 @@ headers =
       ModuleUnitImports
         { muimports_namespaces = ["ImGui"],
           muimports_headers =
-            [ "imgui.h",
+            [ "GLFW/glfw3.h",
+              "imgui.h",
               "backends/imgui_impl_glfw.h",
               "backends/imgui_impl_opengl3.h"
             ]
