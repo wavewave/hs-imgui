@@ -181,11 +181,76 @@ showExampleAppCustomRendering colf = do
               -- a new example with polyline
               polyLine
             ]
-
       let y' = y + n * (sz + spacing)
       for_ (zip [0 ..] drawShapes) $ \(m, drawShape) -> do
         let x' = x + m * (sz + spacing)
         drawShape (x', y')
+
+    let ngonF (x', y') = do
+          v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
+          imDrawList_AddNgonFilled draw_list v (sz * 0.5) col ngon_sides
+          delete v
+        circleF (x', y') = do
+          v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
+          imDrawList_AddCircleFilled draw_list v (sz * 0.5) col circle_segments
+          delete v
+        rectF rnd flag (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + sz) (y' + sz)
+          imDrawList_AddRectFilled draw_list v1 v2 col rnd flag
+          delete v1
+          delete v2
+        triangleF (x', y') = do
+          v1 <- newImVec2 (x' + sz * 0.5) y'
+          v2 <- newImVec2 (x' + sz) (y' + sz - 0.5)
+          v3 <- newImVec2 x' (y' + sz - 0.5)
+          imDrawList_AddTriangleFilled draw_list v1 v2 v3 col
+          delete v1
+          delete v2
+          delete v3
+        horizF (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + sz) (y' + thickness)
+          imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
+          delete v1
+          delete v2
+        vertF (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + thickness) (y' + sz)
+          imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
+          delete v1
+          delete v2
+        pixelF (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + 1) (y' + 1)
+          imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
+          delete v1
+          delete v2
+
+        drawShapesFilled =
+          [ -- N-gon
+            ngonF,
+            -- Circle
+            circleF,
+            -- Square
+            rectF 0.0 (fromIntegral (fromEnum ImDrawFlags_None)),
+            -- Square with all rounded corners
+            rectF rounding (fromIntegral (fromEnum ImDrawFlags_None)),
+            -- Square with two rounded corners
+            rectF rounding (fromIntegral corners_tl_br),
+            -- Triangle
+            triangleF,
+            -- Horizontal line (faster than AddLine, but only handle integer thickness)
+            horizF,
+            -- Vertical line (faster than AddLine, but only handle integer thickness)
+            vertF,
+            -- Pixel (faster than AddLine)
+            pixelF
+          ]
+    let y'' = y + 2 * (sz + spacing)
+    for_ (zip [0 ..] drawShapesFilled) $ \(m, drawShape) -> do
+      let x'' = x + m * (sz + spacing)
+      drawShape (x'', y'')
 
     popItemWidth
     endTabItem

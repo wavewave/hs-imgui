@@ -190,9 +190,13 @@ imDrawList =
     Nothing
     [ NonVirtual void_ "AddLine" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", uint "col", float "thickness"] Nothing,
       NonVirtual void_ "AddRect" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col", float "rounding", int "flags", float "thickness"] Nothing,
+      NonVirtual void_ "AddRectFilled" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col", float "rounding", int "flags"] Nothing,      
       NonVirtual void_ "AddTriangle" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col", float "thickness"] Nothing,
+      NonVirtual void_ "AddTriangleFilled" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col"] Nothing,      
       NonVirtual void_ "AddCircle" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing,
+      NonVirtual void_ "AddCircleFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,      
       NonVirtual void_ "AddNgon" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing,
+      NonVirtual void_ "AddNgonFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,      
       -- first arg is ImVec2* points
       NonVirtual void_ "AddPolyline" [cppclass imVec2 "points", int "num_points", uint "col", int "flags", float "thinkness"] Nothing,
       NonVirtual void_ "AddBezierCubic" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", cppclassref imVec2 "p4", uint "col", float "thickness", int "num_segments"] Nothing,
