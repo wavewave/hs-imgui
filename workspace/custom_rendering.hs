@@ -99,18 +99,58 @@ showExampleAppCustomRendering colf = do
             imDrawList_AddRect draw_list v1 v2 col rnd flag th
             delete v1
             delete v2
-          actions =
-            [ ngon,
+          triangle (x', y') = do
+            v1 <- newImVec2 (x' + sz * 0.5) y'
+            v2 <- newImVec2 (x' + sz) (y' + sz - 0.5)
+            v3 <- newImVec2 x' (y' + sz - 0.5)
+            imDrawList_AddTriangle draw_list v1 v2 v3 col th
+            delete v1
+            delete v2
+            delete v3
+          horiz (x', y') = do
+            v1 <- newImVec2 x' y'
+            v2 <- newImVec2 (x' + sz) y'
+            imDrawList_AddLine draw_list v1 v2 col th
+            delete v1
+            delete v2
+          vert (x', y') = do
+            v1 <- newImVec2 x' y'
+            v2 <- newImVec2 x' (y' + sz)
+            imDrawList_AddLine draw_list v1 v2 col th
+            delete v1
+            delete v2
+          diag (x', y') = do
+            v1 <- newImVec2 x' y'
+            v2 <- newImVec2 (x' + sz) (y' + sz)
+            imDrawList_AddLine draw_list v1 v2 col th
+            delete v1
+            delete v2
+
+          drawShapes =
+            [ -- N-gon
+              ngon,
+              -- Circle
               circle,
+              -- Square
               rect 0.0 (fromIntegral (fromEnum ImDrawFlags_None)),
+              -- Square with all rounded corners
               rect rounding (fromIntegral (fromEnum ImDrawFlags_None)),
-              rect rounding (fromIntegral corners_tl_br)
+              -- Square with two rounded corners
+              rect rounding (fromIntegral corners_tl_br),
+              -- Triangle
+              triangle,
+              -- Horizontal line (note: drawing a filled rectangle will be faster!)
+              horiz,
+              -- Vertical line (note: drawing a filled rectangle will be faster!)
+              vert,
+              -- Diagonal line
+              diag
             ]
 
       let y' = y + n * (sz + spacing)
-      for_ (zip [0 ..] actions) $ \(m, action) -> do
+      for_ (zip [0 ..] drawShapes) $ \(m, drawShape) -> do
         let x' = x + m * (sz + spacing)
-        action (x', y')
+        drawShape (x', y')
 
     popItemWidth
     endTabItem
