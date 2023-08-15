@@ -40,7 +40,7 @@ import FFICXX.Generate.Dependency.Graph
 import FFICXX.Generate.Type.Cabal (BuildType (..), Cabal (..), CabalName (..))
 import FFICXX.Generate.Type.Class
   ( Arg (..),
-    CTypes (CTBool, CTDouble),
+    CTypes (CTBool, CTDouble, CTFloat),
     Class (..),
     EnumType (..),
     Function (..),
@@ -261,6 +261,8 @@ toplevelfunctions :: [TopLevel]
 toplevelfunctions =
   [ TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
     TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
@@ -268,7 +270,9 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "Render" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "SameLine" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "SliderFloat" [cstring "label", star CTFloat "v", float "v_min", float "v_max"] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "TextUnformatted" [cstring "text"] Nothing),
