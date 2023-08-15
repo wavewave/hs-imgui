@@ -21,6 +21,7 @@ import FFICXX.Generate.Code.Primitive
     float,
     int,
     int_,
+    star,
     uint,
     uint_,
     void_,
@@ -39,7 +40,7 @@ import FFICXX.Generate.Dependency.Graph
 import FFICXX.Generate.Type.Cabal (BuildType (..), Cabal (..), CabalName (..))
 import FFICXX.Generate.Type.Class
   ( Arg (..),
-    CTypes (CTDouble),
+    CTypes (CTBool, CTDouble),
     Class (..),
     EnumType (..),
     Function (..),
@@ -129,6 +130,21 @@ gLFWwindow =
     mempty
     Nothing
     []
+    []
+    []
+    False
+
+imDrawData :: Class
+imDrawData =
+  Class
+    cabal
+    "ImDrawData"
+    [deletable]
+    mempty
+    Nothing
+    [ Constructor [] Nothing,
+      NonVirtual void_ "Clear" [] Nothing
+    ]
     []
     []
     False
@@ -230,6 +246,7 @@ imVec4 =
 
 classes =
   [ gLFWwindow,
+    imDrawData,
     imGuiContext,
     imGuiIO,
     imGuiTextBuffer,
@@ -242,14 +259,25 @@ enums =
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
-  [ TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
+  [ TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "Render" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "TextUnformatted" [cstring "text"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "ImGui_ImplGlfw_InitForOpenGL" [cppclass gLFWwindow "window", bool "install_callbacks"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_Shutdown" [] Nothing),
     TLOrdinary (TopLevelFunction bool_ "ImGui_ImplOpenGL3_Init" [cstring "glsl_version"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_NewFrame" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_RenderDrawData" [cppclass imDrawData "draw_data"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing)
   ]
 
@@ -267,6 +295,7 @@ headers =
         }
     ),
     modImports "GLFWwindow" [] ["backends/imgui_impl_glfw.h"],
+    modImports "ImDrawData" [] ["imgui.h"],
     modImports "ImGuiContext" [] ["imgui.h"],
     modImports "ImGuiIO" [] ["imgui.h"],
     modImports "ImGuiTextBuffer" [] ["imgui.h"],
