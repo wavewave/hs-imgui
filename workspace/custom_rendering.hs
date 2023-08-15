@@ -237,7 +237,6 @@ static void ShowExampleAppCustomRendering(bool* p_open)
     ImGui::End();
 }
 -}
-
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -250,7 +249,7 @@ import Data.IORef (modifyIORef', newIORef, readIORef)
 import Data.String (IsString (..))
 import FFICXX.Runtime.Cast (FPtr (..))
 import Foreign.C.String (CString, newCString, withCString)
-import Foreign.C.Types (CBool (..), CFloat)
+import Foreign.C.Types (CBool (..), CFloat, CUInt (..))
 import Foreign.Marshal.Alloc (alloca)
 import Foreign.Marshal.Array (allocaArray)
 import Foreign.Marshal.Utils (fromBool, toBool)
@@ -261,23 +260,26 @@ import ImGui.Enum
 import ImGui.ImGuiIO.Implementation
   ( imGuiIO_ConfigFlags_get,
     imGuiIO_ConfigFlags_set,
-    imGuiIO_Framerate_get
+    imGuiIO_Framerate_get,
   )
 import ImGui.ImVec2.Implementation (imVec2_x_get, imVec2_y_get)
-import ImGui.ImVec4.Implementation (imVec4_x_get, imVec4_y_get, imVec4_z_get, imVec4_w_get)
+import ImGui.ImVec4.Implementation (imVec4_w_get, imVec4_x_get, imVec4_y_get, imVec4_z_get)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf (printf)
+
+foreign import ccall unsafe "toImU32"
+  c_toImU32 :: ImColor -> IO CUInt
 
 instance IsString CString where
   fromString s = unsafePerformIO $ newCString s
 
-showExampleAppCustomRendering :: IO ()
-showExampleAppCustomRendering = do
-  begin ("Custom rendering"::CString) nullPtr
-  beginTabBar ("##TabBar"::CString)
-  whenM (toBool <$> beginTabItem ("Primitives"::CString)) $ do
+showExampleAppCustomRendering :: ImVec4 -> IO ()
+showExampleAppCustomRendering colf = do
+  begin ("Custom rendering" :: CString) nullPtr
+  beginTabBar ("##TabBar" :: CString)
+  whenM (toBool <$> beginTabItem ("Primitives" :: CString)) $ do
     fontSize <- getFontSize
-    pushItemWidth (-fontSize * 15);
+    pushItemWidth (-fontSize * 15)
     draw_list <- getWindowDrawList
 
     -- Draw gradients
@@ -292,36 +294,36 @@ showExampleAppCustomRendering = do
     -}
 
     -- Draw a bunch of primitives
-    textUnformatted ("All primitives"::CString)
+    textUnformatted ("All primitives" :: CString)
     {- let sz = 36.0
         thickness = 3.0
         int ngon_side = 6
         circle_segments_override = False
         ..
      -}
+    let sz = 36.0
+        circle_segments = 0
+        thickness = 3.0
+    colorEdit4 ("Color" :: CString) (castPtr (get_fptr colf))
     p <- getCursorScreenPos
     px <- imVec2_x_get p
     py <- imVec2_y_get p
     let x = px + 4
         y = py + 4
-    colf <- newImVec4 1.0 1.0 0.4 1.0
-    let sz = 36.0
-        circle_segments = 0
-        thickness = 3.0
-    -- ImU32 col = ImColor(colf)
-        col = 2398237429
+    col_ <- newImColor colf
+    col <- c_toImU32 col_
     for_ [0, 1] $ \n -> do
       let th
-             | n == 0 = 1
-             | otherwise = thickness
-      v <- newImVec2 (x + sz*0.5) (y + sz*0.5)
-      imDrawList_AddCircle draw_list v (sz*0.5) col circle_segments th
+            | n == 0 = 1
+            | otherwise = thickness
+      v <- newImVec2 (x + sz * 0.5) (y + sz * 0.5)
+      imDrawList_AddCircle draw_list v (sz * 0.5) col circle_segments th
 
     popItemWidth
     endTabItem
-  whenM (toBool <$> beginTabItem ("Canvas"::CString)) $ do
+  whenM (toBool <$> beginTabItem ("Canvas" :: CString)) $ do
     endTabItem
-  whenM (toBool <$> beginTabItem ("BG/FG draw list"::CString)) $ do
+  whenM (toBool <$> beginTabItem ("BG/FG draw list" :: CString)) $ do
     endTabItem
   endTabBar
   end
@@ -341,7 +343,7 @@ main = do
     glfwCreateWindow
       1280
       720
-      ("Dear ImGui GLFW+OpenGL3 example"::CString)
+      ("Dear ImGui GLFW+OpenGL3 example" :: CString)
       (cast_fptr_to_obj nullPtr :: GLFWmonitor)
       (cast_fptr_to_obj nullPtr :: GLFWwindow)
   glfwMakeContextCurrent window
@@ -368,6 +370,7 @@ main = do
 
   -- Our state
   clear_color <- newImVec4 0.45 0.55 0.60 1.00
+  colf <- newImVec4 1.0 1.0 0.4 1.0
 
   -- main loop
   whileM $ do
@@ -377,7 +380,7 @@ main = do
     imGui_ImplGlfw_NewFrame
     newFrame
 
-    showExampleAppCustomRendering
+    showExampleAppCustomRendering colf
 
     render
 
@@ -392,7 +395,7 @@ main = do
         y <- imVec4_y_get clear_color
         z <- imVec4_z_get clear_color
         w <- imVec4_w_get clear_color
-        glClearColor (x*w) (y*w) (z*w) w
+        glClearColor (x * w) (y * w) (z * w) w
         glClear 0x4000 {- GL_COLOR_BUFFER_BIT -}
     imGui_ImplOpenGL3_RenderDrawData =<< getDrawData
     glfwSwapBuffers window

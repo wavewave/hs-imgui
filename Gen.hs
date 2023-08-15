@@ -188,7 +188,7 @@ imDrawList =
     [deletable]
     mempty
     Nothing
-    [ NonVirtual void_ "AddCircle" [cppclassref imVec2 "center", float "radius", int "col", int "num_segments", float "thickness"] Nothing
+    [ NonVirtual void_ "AddCircle" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing
     ]
     []
     []
@@ -380,10 +380,8 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
-
-
+    TLOrdinary (TopLevelFunction bool_ "ColorEdit4" [cstring "label", star CTFloat "col"] Nothing),
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
-
     TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
     TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
@@ -393,16 +391,11 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
-
     TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PushItemWidth" [float "item_width"] Nothing),
     TLOrdinary (TopLevelFunction float_ "CalcItemWidth" [] Nothing),
-
     TLOrdinary (TopLevelFunction float_ "GetFontSize" [] Nothing),
     TLOrdinary (TopLevelFunction float_ "GetFrameHeight" [] Nothing),
-
-
-
     TLOrdinary (TopLevelFunction void_ "Render" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "SameLine" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
@@ -420,7 +413,7 @@ toplevelfunctions =
     -- GLFW functions
     TLOrdinary (TopLevelFunction (cppclass_ gLFWwindow) "glfwCreateWindow" [int "width", int "height", cstring "title", cppclass gLFWmonitor "monitor", cppclass gLFWwindow "share"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwDestroyWindow" [cppclass gLFWwindow "window"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height" ] Nothing),
+    TLOrdinary (TopLevelFunction void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwInit" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwMakeContextCurrent" [cppclass gLFWwindow "window"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glfwPollEvents" [] Nothing),
@@ -432,7 +425,8 @@ toplevelfunctions =
     -- GL functions
     TLOrdinary (TopLevelFunction void_ "glClear" [int "mask"] Nothing),
     TLOrdinary (TopLevelFunction void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)]
+    TLOrdinary (TopLevelFunction void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)
+  ]
 
 templates = []
 
