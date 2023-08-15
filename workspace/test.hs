@@ -14,6 +14,7 @@ import Foreign.Marshal.Utils (fromBool, toBool)
 import Foreign.Ptr (Ptr, castPtr, nullPtr)
 import Foreign.Storable (peek, poke)
 import ImGui
+import ImGui.Enum
 import ImGui.ImGuiIO.Implementation
   ( imGuiIO_ConfigFlags_get,
     imGuiIO_ConfigFlags_set,
@@ -56,7 +57,10 @@ main = do
 
   flags <- imGuiIO_ConfigFlags_get io
   -- Enable Keyboard Controls and Gamepad Controls
-  let flags' = flags .|. 1 {- NavEnableKeyboard -} .|. 2 {- NavEnableGamepad -}
+  let flags' =
+        flags
+          .|. fromIntegral (fromEnum ImGuiConfigFlags_NavEnableKeyboard)
+          .|. fromIntegral (fromEnum ImGuiConfigFlags_NavEnableGamepad)
   imGuiIO_ConfigFlags_set io flags'
 
   -- Our state

@@ -192,6 +192,24 @@ imGuiTextBuffer =
     []
     False
 
+imGuiConfigFlags_ :: EnumType
+imGuiConfigFlags_ =
+  EnumType
+    { enum_name = "ImGuiConfigFlags_",
+      enum_cases =
+        [ "ImGuiConfigFlags_None",
+          "ImGuiConfigFlags_NavEnableKeyboard",
+          "ImGuiConfigFlags_NavEnableGamepad",
+          "ImGuiConfigFlags_NavEnableSetMousePos",
+          "ImGuiConfigFlags_NavNoCaptureKeyboard",
+          "ImGuiConfigFlags_NoMouse",
+          "ImGuiConfigFlags_NoMouseCursorChange",
+          "ImGuiConfigFlags_IsSRGB",
+          "ImGuiConfigFlags_IsTouchScreen"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imGuiWindowFlags_ :: EnumType
 imGuiWindowFlags_ =
   EnumType
@@ -260,7 +278,8 @@ classes =
   ]
 
 enums =
-  [ imGuiWindowFlags_
+  [ imGuiConfigFlags_,
+    imGuiWindowFlags_
   ]
 
 toplevelfunctions :: [TopLevel]
