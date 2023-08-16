@@ -294,6 +294,23 @@ toplevelfunctions =
                 int "count"
               ]
           }
+      ),
+    TLTemplate
+      ( TopLevelTemplateFunction
+          { topleveltfunc_params = ["t1"],
+            topleveltfunc_ret = void_,
+            topleveltfunc_name = "plotLine1",
+            topleveltfunc_oname = "ImPlot::PlotLine",
+            topleveltfunc_args =
+              [ cstring "label_id",
+                Arg (TemplateParamPointer "t1") "values",
+                int "count",
+                double "xscale",
+                double "xstart",
+                int "flags",
+                int "offset"
+              ]
+          }
       )
   ]
 

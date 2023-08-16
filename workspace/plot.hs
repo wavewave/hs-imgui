@@ -7,7 +7,7 @@ module Main where
 import Control.Monad.Extra (whenM, whileM)
 import Data.Bits ((.|.))
 import Data.Foldable (for_, traverse_)
-import Data.IORef (modifyIORef', newIORef, readIORef)
+import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.String (IsString (..))
 import FFICXX.Runtime.Cast (FPtr (..))
 import FFICXX.Runtime.TH (IsCPrimitive (..), TemplateParamInfo (..))
@@ -64,6 +64,18 @@ TH.genPlotLineInstanceFor
       }
   )
 
+-- this is a hack. but it's the best up to now.
+TH.genPlotLine1InstanceFor
+  CPrim
+  ( [t|Ptr CFloat|],
+    TPInfo
+      { tpinfoCxxType = "float",
+        tpinfoCxxHeaders = [],
+        tpinfoCxxNamespaces = [],
+        tpinfoSuffix = "float"
+      }
+  )
+
 showFramerate :: ImGuiIO -> IO ()
 showFramerate io = do
   begin ("Framerate monitor" :: CString) nullPtr
@@ -95,8 +107,8 @@ demoLinePlots (px1, py1) (px2, py2) = do
     ImPlot.endPlot
   end
 
-makeSparkline :: IO ()
-makeSparkline = do
+makeSparkline :: Ptr CFloat -> Int -> IO ()
+makeSparkline pdat offset = do
   spark_size <- newImVec2 (-1) 35
   zero <- newImVec2 0 0
   ImPlot.pushStyleVar (fromIntegral (fromEnum ImPlotStyleVar_PlotPadding)) zero
@@ -107,12 +119,13 @@ makeSparkline = do
       no_deco = fromIntegral (fromEnum ImPlotAxisFlags_NoDecorations)
   whenM (toBool <$> ImPlot.beginPlot ("1" :: CString) spark_size spark_flags) $ do
     ImPlot.setupAxes (nullPtr :: CString) (nullPtr :: CString) no_deco no_deco
+    plotLine1 "##spark" pdat 100 1 0 0 (fromIntegral offset)
     ImPlot.endPlot
   delete spark_size
   delete zero
 
-demoTables :: Ptr CFloat -> IO ()
-demoTables pdat = do
+demoTables :: IORef Int -> Ptr CFloat -> IO ()
+demoTables ref_offset pdat = do
   begin ("Table of plots" :: CString) nullPtr
   let flags =
         fromIntegral $
@@ -126,19 +139,19 @@ demoTables pdat = do
   tableSetupColumn ("Voltage" :: CString) (fromIntegral (fromEnum ImGuiTableColumnFlags_WidthFixed)) 75.0
   tableSetupColumn_ ("EMG Signal" :: CString)
   tableHeadersRow
-  let offset = 1
+  offset <- readIORef ref_offset
   for_ [0 .. 9] $ \(row :: Int) -> do
+    let offset' = (offset + row * 10) `mod` 100
     tableNextRow 0
     tableSetColumnIndex 0
     textUnformatted (fromString (printf "EMG %d" row) :: CString)
     tableSetColumnIndex 1
-    val :: Float <- realToFrac <$> peekElemOff pdat offset
+    val :: Float <- realToFrac <$> peekElemOff pdat offset'
     textUnformatted (fromString (printf "%.3f V" val) :: CString)
     tableSetColumnIndex 2
     pushID (fromIntegral row)
-    makeSparkline
+    makeSparkline pdat offset'
     popID
-
   endTable
   end
 
@@ -186,6 +199,7 @@ main = do
   -- Our state
   clear_color <- newImVec4 0.45 0.55 0.60 1.00
   colf <- newImVec4 1.0 1.0 0.4 1.0
+  ref_offset <- newIORef (5 :: Int)
 
   allocaArray 1001 $ \(px1 :: Ptr CFloat) ->
     allocaArray 1001 $ \(py1 :: Ptr CFloat) ->
@@ -197,6 +211,7 @@ main = do
               pokeElemOff pdat i v
             -- main loop
             whileM $ do
+              modifyIORef' ref_offset (+ 1)
               glfwPollEvents
               -- Start the Dear ImGui frame
               imGui_ImplOpenGL3_NewFrame
@@ -205,8 +220,7 @@ main = do
 
               showFramerate io
               demoLinePlots (px1, py1) (px2, py2)
-              demoTables pdat
-
+              demoTables ref_offset pdat
               render
 
               -- c_draw_shim window clear_color
