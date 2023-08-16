@@ -2,3 +2,4 @@ optional-packages:
   ./imgui
   ./implot
   ./plot-demo
+  ./draw-demo

@@ -1,0 +1,33 @@
+cabal-version:      3.4
+name:               draw-demo
+version:            0.1.0.0
+-- synopsis:
+-- description:
+license:            MIT
+license-file:       LICENSE
+author:             Ian-Woo Kim
+maintainer:         ianwookim@gmail.com
+-- copyright:
+category:           Graphics
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+extra-source-files: csrc/shim.cpp
+
+common warnings
+    ghc-options: -Wall
+
+executable draw-demo
+    import:           warnings
+    main-is:          Main.hs
+    other-modules:    StorableInstances
+    -- other-extensions:
+    build-depends:    base ^>=4.18.0.0,
+                      extra,
+                      fficxx-runtime,
+                      imgui,
+                      implot,
+                      stdcxx
+    hs-source-dirs:   app
+    cxx-sources:      csrc/shim.cpp
+    default-language: GHC2021
+    ghc-options:      -framework OpenGL
