@@ -49,7 +49,9 @@ import FFICXX.Generate.Type.Class
     Function (..),
     ProtectedMethod (..),
     TLOrdinary (..),
+    TLTemplate (..),
     TopLevel (..),
+    Types (..),
     Variable (..),
   )
 import FFICXX.Generate.Type.Config
@@ -137,18 +139,66 @@ imPlotContext =
     []
     False
 
+imPlotAxisFlags_ :: EnumType
+imPlotAxisFlags_ =
+  EnumType
+    { enum_name = "ImPlotAxisFlags_",
+      enum_cases =
+        [ "ImPlotAxisFlags_None",
+          "ImPlotAxisFlags_NoLabel",
+          "ImPlotAxisFlags_NoGridLines",
+          "ImPlotAxisFlags_NoTickMarks",
+          "ImPlotAxisFlags_NoTickLabels",
+          "ImPlotAxisFlags_NoInitialFit",
+          "ImPlotAxisFlags_NoMenus",
+          "ImPlotAxisFlags_NoSideSwitch",
+          "ImPlotAxisFlags_NoHighlight",
+          "ImPlotAxisFlags_Opposite",
+          "ImPlotAxisFlags_Foreground",
+          "ImPlotAxisFlags_Invert",
+          "ImPlotAxisFlags_AutoFit",
+          "ImPlotAxisFlags_RangeFit",
+          "ImPlotAxisFlags_PanStretch",
+          "ImPlotAxisFlags_LockMin",
+          "ImPlotAxisFlags_LockMax",
+          "ImPlotAxisFlags_Lock",
+          "ImPlotAxisFlags_NoDecorations",
+          "ImPlotAxisFlags_AuxDefault"
+        ],
+      enum_header = "implot.h"
+    }
+
 classes =
   [ imPlotContext
   ]
 
 enums =
-  []
+  [ imPlotAxisFlags_
+  ]
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
   -- for now
   [ TLOrdinary (TopLevelFunction void_ "CreateContext" [] (Just "createImPlotContext")),
-    TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showImPlotDemoWindow"))
+    TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showImPlotDemoWindow")),
+    TLOrdinary (TopLevelFunction bool_ "BeginPlot" [cstring "title_id"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "EndPlot" [] Nothing),
+
+    TLOrdinary (TopLevelFunction void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags" ] Nothing),
+    TLTemplate
+      ( TopLevelTemplateFunction
+          { topleveltfunc_params = ["t1"],
+            topleveltfunc_ret = void_,
+            topleveltfunc_name = "plotLine",
+            topleveltfunc_oname = "ImPlot::PlotLine",
+            topleveltfunc_args =
+              [ cstring "label_id",
+                Arg (TemplateParamPointer "t1") "xs",
+                Arg (TemplateParamPointer "t1") "ys",
+                int "count"
+              ]
+          }
+      )
   ]
 
 templates = []

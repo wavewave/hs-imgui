@@ -404,6 +404,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
+    TLOrdinary (TopLevelFunction double_ "GetTime" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PushItemWidth" [float "item_width"] Nothing),

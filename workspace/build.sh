@@ -14,6 +14,9 @@ cabal build fficxx-runtime && \
   cabal exec -- ghc demo-implot-builtin.hs -framework OpenGL -lglfw -package extra && \
   hsc2hs --cflag=`pkg-config --cflags libimgui` --cc=c++ --ld=c++ StorableInstances.hsc && \
   cabal exec -- ghc StorableInstances.hs custom_rendering.hs shim.o -framework OpenGL -lglfw -package extra && \
+  cabal exec -- ghc -c plot.hs -package extra && \
+  cabal exec -- ghc -o plot plot.o -framework OpenGL -lglfw -package extra && \
   ./demo-imgui-builtin && \
   ./custom_rendering && \
-  ./demo-implot-builtin
+  ./demo-implot-builtin && \
+  ./plot
