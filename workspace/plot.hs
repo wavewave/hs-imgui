@@ -28,12 +28,13 @@ import ImGui.ImGuiIO.Implementation
 import ImGui.ImVec2.Implementation (imVec2_x_get, imVec2_y_get)
 import ImGui.ImVec4.Implementation (imVec4_w_get, imVec4_x_get, imVec4_y_get, imVec4_z_get)
 import qualified ImPlot
-import ImPlot.Enum (ImPlotAxisFlags_ (..))
+import ImPlot.Enum
 import qualified ImPlot.TH as TH
 import ImPlot.Template
 import STD.Deletable (delete)
 import StorableInstances ()
 import System.IO.Unsafe (unsafePerformIO)
+import System.Random (randomRIO)
 import Text.Printf (printf)
 
 instance IsString CString where
@@ -74,7 +75,7 @@ showFramerate io = do
 demoLinePlots :: (Ptr CFloat, Ptr CFloat) -> (Ptr CDouble, Ptr CDouble) -> IO ()
 demoLinePlots (px1, py1) (px2, py2) = do
   begin ("Line plots" :: CString) nullPtr
-  whenM (toBool <$> ImPlot.beginPlot ("Line Plots" :: CString)) $ do
+  whenM (toBool <$> ImPlot.beginPlot_ ("Line Plots" :: CString)) $ do
     ImPlot.setupAxes
       ("x" :: CString)
       ("y" :: CString)
@@ -94,8 +95,24 @@ demoLinePlots (px1, py1) (px2, py2) = do
     ImPlot.endPlot
   end
 
-demoTables :: IO ()
-demoTables = do
+makeSparkline :: IO ()
+makeSparkline = do
+  spark_size <- newImVec2 (-1) 35
+  zero <- newImVec2 0 0
+  ImPlot.pushStyleVar (fromIntegral (fromEnum ImPlotStyleVar_PlotPadding)) zero
+  let spark_flags =
+        fromIntegral $
+          fromEnum ImPlotFlags_CanvasOnly
+            .|. fromEnum ImPlotFlags_NoChild
+      no_deco = fromIntegral (fromEnum ImPlotAxisFlags_NoDecorations)
+  whenM (toBool <$> ImPlot.beginPlot ("1" :: CString) spark_size spark_flags) $ do
+    ImPlot.setupAxes (nullPtr :: CString) (nullPtr :: CString) no_deco no_deco
+    ImPlot.endPlot
+  delete spark_size
+  delete zero
+
+demoTables :: Ptr CFloat -> IO ()
+demoTables pdat = do
   begin ("Table of plots" :: CString) nullPtr
   let flags =
         fromIntegral $
@@ -104,9 +121,23 @@ demoTables = do
             .|. fromEnum ImGuiTableFlags_RowBg
             .|. fromEnum ImGuiTableFlags_Resizable
             .|. fromEnum ImGuiTableFlags_Reorderable
-  beginTable ("##table" :: CString) 1 (fromIntegral flags)
-  whenM (toBool <$> ImPlot.beginPlot ("1"::CString)) $ do
-    ImPlot.endPlot
+  beginTable ("##table" :: CString) 3 (fromIntegral flags)
+  tableSetupColumn ("Electrode" :: CString) (fromIntegral (fromEnum ImGuiTableColumnFlags_WidthFixed)) 75.0
+  tableSetupColumn ("Voltage" :: CString) (fromIntegral (fromEnum ImGuiTableColumnFlags_WidthFixed)) 75.0
+  tableSetupColumn_ ("EMG Signal" :: CString)
+  tableHeadersRow
+  let offset = 1
+  for_ [0 .. 9] $ \(row :: Int) -> do
+    tableNextRow 0
+    tableSetColumnIndex 0
+    textUnformatted (fromString (printf "EMG %d" row) :: CString)
+    tableSetColumnIndex 1
+    val :: Float <- realToFrac <$> peekElemOff pdat offset
+    textUnformatted (fromString (printf "%.3f V" val) :: CString)
+    tableSetColumnIndex 2
+    pushID (fromIntegral row)
+    makeSparkline
+    popID
 
   endTable
   end
@@ -159,38 +190,42 @@ main = do
   allocaArray 1001 $ \(px1 :: Ptr CFloat) ->
     allocaArray 1001 $ \(py1 :: Ptr CFloat) ->
       allocaArray 20 $ \(px2 :: Ptr CDouble) ->
-        allocaArray 20 $ \(py2 :: Ptr CDouble) -> do
-          -- main loop
-          whileM $ do
-            glfwPollEvents
-            -- Start the Dear ImGui frame
-            imGui_ImplOpenGL3_NewFrame
-            imGui_ImplGlfw_NewFrame
-            newFrame
+        allocaArray 20 $ \(py2 :: Ptr CDouble) ->
+          allocaArray 100 $ \(pdat :: Ptr CFloat) -> do
+            for_ [0 .. 99] $ \i -> do
+              v <- randomRIO (0, 10)
+              pokeElemOff pdat i v
+            -- main loop
+            whileM $ do
+              glfwPollEvents
+              -- Start the Dear ImGui frame
+              imGui_ImplOpenGL3_NewFrame
+              imGui_ImplGlfw_NewFrame
+              newFrame
 
-            showFramerate io
-            demoLinePlots (px1, py1) (px2, py2)
-            demoTables
+              showFramerate io
+              demoLinePlots (px1, py1) (px2, py2)
+              demoTables pdat
 
-            render
+              render
 
-            -- c_draw_shim window clear_color
-            alloca $ \p_dispW ->
-              alloca $ \p_dispH -> do
-                glfwGetFramebufferSize window p_dispW p_dispH
-                dispW <- peek p_dispW
-                dispH <- peek p_dispH
-                glViewport 0 0 dispW dispH
-                x <- imVec4_x_get clear_color
-                y <- imVec4_y_get clear_color
-                z <- imVec4_z_get clear_color
-                w <- imVec4_w_get clear_color
-                glClearColor (x * w) (y * w) (z * w) w
-                glClear 0x4000 {- GL_COLOR_BUFFER_BIT -}
-            imGui_ImplOpenGL3_RenderDrawData =<< getDrawData
-            glfwSwapBuffers window
+              -- c_draw_shim window clear_color
+              alloca $ \p_dispW ->
+                alloca $ \p_dispH -> do
+                  glfwGetFramebufferSize window p_dispW p_dispH
+                  dispW <- peek p_dispW
+                  dispH <- peek p_dispH
+                  glViewport 0 0 dispW dispH
+                  x <- imVec4_x_get clear_color
+                  y <- imVec4_y_get clear_color
+                  z <- imVec4_z_get clear_color
+                  w <- imVec4_w_get clear_color
+                  glClearColor (x * w) (y * w) (z * w) w
+                  glClear 0x4000 {- GL_COLOR_BUFFER_BIT -}
+              imGui_ImplOpenGL3_RenderDrawData =<< getDrawData
+              glfwSwapBuffers window
 
-            not . toBool <$> glfwWindowShouldClose window
+              not . toBool <$> glfwWindowShouldClose window
 
   -- Cleanup
   imGui_ImplOpenGL3_Shutdown

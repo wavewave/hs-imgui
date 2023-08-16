@@ -104,6 +104,41 @@ deletable =
       class_tmpl_funcs = []
     }
 
+--
+-- from imgui
+--
+
+imgui_cabal =
+  Cabal
+    { cabal_pkgname = CabalName "imgui",
+      cabal_version = "1.0.0.0",
+      cabal_cheaderprefix = "ImGui",
+      cabal_moduleprefix = "ImGui",
+      cabal_additional_c_incs = [],
+      cabal_additional_c_srcs = [],
+      cabal_additional_pkgdeps = [CabalName "stdcxx"],
+      cabal_license = Just "BSD-3-Clause",
+      cabal_licensefile = Just "LICENSE",
+      cabal_extraincludedirs = [],
+      cabal_extralibdirs = [],
+      cabal_extrafiles = [],
+      cabal_pkg_config_depends = ["libimgui", "glfw3"],
+      cabal_buildType = Simple
+    }
+
+imVec2 :: Class
+imVec2 =
+  Class
+    imgui_cabal
+    "ImVec2"
+    [deletable]
+    mempty
+    Nothing
+    []
+    []
+    []
+    False
+
 ------------------
 -- start implot --
 ------------------
@@ -139,6 +174,27 @@ imPlotContext =
     []
     False
 
+imPlotFlags_ :: EnumType
+imPlotFlags_ =
+  EnumType
+    { enum_name = "ImPlotFlags_",
+      enum_cases =
+        [ "ImPlotFlags_None",
+          "ImPlotFlags_NoTitle",
+          "ImPlotFlags_NoLegend",
+          "ImPlotFlags_NoMouseText",
+          "ImPlotFlags_NoInputs",
+          "ImPlotFlags_NoMenus",
+          "ImPlotFlags_NoBoxSelect",
+          "ImPlotFlags_NoChild",
+          "ImPlotFlags_NoFrame",
+          "ImPlotFlags_Equal",
+          "ImPlotFlags_Crosshairs",
+          "ImPlotFlags_CanvasOnly"
+        ],
+      enum_header = "implot.h"
+    }
+
 imPlotAxisFlags_ :: EnumType
 imPlotAxisFlags_ =
   EnumType
@@ -168,12 +224,50 @@ imPlotAxisFlags_ =
       enum_header = "implot.h"
     }
 
+imPlotStyleVar_ :: EnumType
+imPlotStyleVar_ =
+  EnumType
+    { enum_name = "ImPlotStyleVar_",
+      enum_cases =
+        [ "ImPlotStyleVar_LineWeight",
+          "ImPlotStyleVar_Marker",
+          "ImPlotStyleVar_MarkerSize",
+          "ImPlotStyleVar_MarkerWeight",
+          "ImPlotStyleVar_FillAlpha",
+          "ImPlotStyleVar_ErrorBarSize",
+          "ImPlotStyleVar_ErrorBarWeight",
+          "ImPlotStyleVar_DigitalBitHeight",
+          "ImPlotStyleVar_DigitalBitGap",
+          "ImPlotStyleVar_PlotBorderSize",
+          "ImPlotStyleVar_MinorAlpha",
+          "ImPlotStyleVar_MajorTickLen",
+          "ImPlotStyleVar_MinorTickLen",
+          "ImPlotStyleVar_MajorTickSize",
+          "ImPlotStyleVar_MinorTickSize",
+          "ImPlotStyleVar_MajorGridSize",
+          "ImPlotStyleVar_MinorGridSize",
+          "ImPlotStyleVar_PlotPadding",
+          "ImPlotStyleVar_LabelPadding",
+          "ImPlotStyleVar_LegendPadding",
+          "ImPlotStyleVar_LegendInnerPadding",
+          "ImPlotStyleVar_MousePosPadding",
+          "ImPlotStyleVar_AnnotationPadding",
+          "ImPlotStyleVar_FitPadding",
+          "ImPlotStyleVar_PlotDefaultSize",
+          "ImPlotStyleVar_PlotMinSize",
+          "ImPlotStyleVar_COUNT"
+        ],
+      enum_header = "implot.h"
+    }
+
 classes =
   [ imPlotContext
   ]
 
 enums =
-  [ imPlotAxisFlags_
+  [ imPlotFlags_,
+    imPlotAxisFlags_,
+    imPlotStyleVar_
   ]
 
 toplevelfunctions :: [TopLevel]
@@ -181,9 +275,12 @@ toplevelfunctions =
   -- for now
   [ TLOrdinary (TopLevelFunction void_ "CreateContext" [] (Just "createImPlotContext")),
     TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showImPlotDemoWindow")),
-    TLOrdinary (TopLevelFunction bool_ "BeginPlot" [cstring "title_id"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "BeginPlot" [cstring "title_id"] (Just "beginPlot_")),
     TLOrdinary (TopLevelFunction void_ "EndPlot" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags"] Nothing),
+    -- style
+    TLOrdinary (TopLevelFunction void_ "PushStyleVar" [int "idx", cppclassref imVec2 "val"] Nothing),
     TLTemplate
       ( TopLevelTemplateFunction
           { topleveltfunc_params = ["t1"],

@@ -514,10 +514,18 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "TextUnformatted" [cstring "text"] Nothing),
+    -- ID
+    TLOrdinary (TopLevelFunction void_ "PushID" [int "int_id"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "PopID" [] Nothing),
     -- table
     TLOrdinary (TopLevelFunction bool_ "BeginTable" [cstring "str_id", int "column", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction void_ "EndTable" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "TableHeadersRow" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "TableNextRow" [int "row_flags"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "TableNextColumn" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "TableSetupColumn" [cstring "label", int "flags", float "init_width_or_weight"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "TableSetupColumn" [cstring "label"] (Just "tableSetupColumn_")),
+    TLOrdinary (TopLevelFunction void_ "TableSetColumnIndex" [int "column_n"] Nothing),
     -- backend
     TLOrdinary (TopLevelFunction bool_ "ImGui_ImplGlfw_InitForOpenGL" [cppclass gLFWwindow "window", bool "install_callbacks"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_NewFrame" [] Nothing),
