@@ -103,7 +103,7 @@ deletable =
     }
 
 -----------------
--- start hgdal --
+-- start imgui --
 -----------------
 
 cabal =
