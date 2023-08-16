@@ -63,6 +63,14 @@ TH.genPlotLineInstanceFor
       }
   )
 
+showFramerate :: ImGuiIO -> IO ()
+showFramerate io = do
+  begin ("Framerate monitor" :: CString) nullPtr
+  framerate :: Float <- realToFrac <$> imGuiIO_Framerate_get io
+  withCString (printf "Application average %.3f ms/frame (%.1f FPS)" (1000.0 / framerate) framerate) $ \c_str ->
+    textUnformatted c_str
+  end
+
 demoLinePlots :: (Ptr CFloat, Ptr CFloat) -> (Ptr CDouble, Ptr CDouble) -> IO ()
 demoLinePlots (px1, py1) (px2, py2) = do
   begin ("demo line plots" :: CString) nullPtr
@@ -101,7 +109,7 @@ main = do
     glfwCreateWindow
       1280
       720
-      ("Dear ImGui GLFW+OpenGL3 example" :: CString)
+      ("ImPlot Haskell Demo" :: CString)
       (cast_fptr_to_obj nullPtr :: GLFWmonitor)
       (cast_fptr_to_obj nullPtr :: GLFWwindow)
   glfwMakeContextCurrent window
@@ -143,6 +151,7 @@ main = do
             imGui_ImplGlfw_NewFrame
             newFrame
 
+            showFramerate io
             demoLinePlots (px1, py1) (px2, py2)
 
             render
