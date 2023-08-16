@@ -73,7 +73,7 @@ showFramerate io = do
 
 demoLinePlots :: (Ptr CFloat, Ptr CFloat) -> (Ptr CDouble, Ptr CDouble) -> IO ()
 demoLinePlots (px1, py1) (px2, py2) = do
-  begin ("demo line plots" :: CString) nullPtr
+  begin ("Line plots" :: CString) nullPtr
   whenM (toBool <$> ImPlot.beginPlot ("Line Plots" :: CString)) $ do
     ImPlot.setupAxes
       ("x" :: CString)
@@ -92,6 +92,23 @@ demoLinePlots (px1, py1) (px2, py2) = do
       pokeElemOff py2 i (x * x)
     plotLine "g(x)" px2 py2 20
     ImPlot.endPlot
+  end
+
+demoTables :: IO ()
+demoTables = do
+  begin ("Table of plots" :: CString) nullPtr
+  let flags =
+        fromIntegral $
+          fromEnum ImGuiTableFlags_BordersOuter
+            .|. fromEnum ImGuiTableFlags_BordersV
+            .|. fromEnum ImGuiTableFlags_RowBg
+            .|. fromEnum ImGuiTableFlags_Resizable
+            .|. fromEnum ImGuiTableFlags_Reorderable
+  beginTable ("##table" :: CString) 1 (fromIntegral flags)
+  whenM (toBool <$> ImPlot.beginPlot ("1"::CString)) $ do
+    ImPlot.endPlot
+
+  endTable
   end
 
 main :: IO ()
@@ -153,6 +170,7 @@ main = do
 
             showFramerate io
             demoLinePlots (px1, py1) (px2, py2)
+            demoTables
 
             render
 

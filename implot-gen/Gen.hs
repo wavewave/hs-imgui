@@ -183,8 +183,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showImPlotDemoWindow")),
     TLOrdinary (TopLevelFunction bool_ "BeginPlot" [cstring "title_id"] Nothing),
     TLOrdinary (TopLevelFunction void_ "EndPlot" [] Nothing),
-
-    TLOrdinary (TopLevelFunction void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags" ] Nothing),
+    TLOrdinary (TopLevelFunction void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags"] Nothing),
     TLTemplate
       ( TopLevelTemplateFunction
           { topleveltfunc_params = ["t1"],

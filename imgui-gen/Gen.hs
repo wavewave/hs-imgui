@@ -292,6 +292,98 @@ imGuiConfigFlags_ =
       enum_header = "imgui.h"
     }
 
+imGuiTableFlags_ :: EnumType
+imGuiTableFlags_ =
+  EnumType
+    { enum_name = "ImGuiTableFlags_",
+      enum_cases =
+        [ "ImGuiTableFlags_None",
+          "ImGuiTableFlags_Resizable",
+          "ImGuiTableFlags_Reorderable",
+          "ImGuiTableFlags_Hideable",
+          "ImGuiTableFlags_Sortable",
+          "ImGuiTableFlags_NoSavedSettings",
+          "ImGuiTableFlags_ContextMenuInBody",
+          "ImGuiTableFlags_RowBg",
+          "ImGuiTableFlags_BordersInnerH",
+          "ImGuiTableFlags_BordersOuterH",
+          "ImGuiTableFlags_BordersInnerV",
+          "ImGuiTableFlags_BordersOuterV",
+          "ImGuiTableFlags_BordersH",
+          "ImGuiTableFlags_BordersV",
+          "ImGuiTableFlags_BordersInner",
+          "ImGuiTableFlags_BordersOuter",
+          "ImGuiTableFlags_Borders",
+          "ImGuiTableFlags_NoBordersInBody",
+          "ImGuiTableFlags_NoBordersInBodyUntilResize",
+          "ImGuiTableFlags_SizingFixedFit",
+          "ImGuiTableFlags_SizingFixedSame",
+          "ImGuiTableFlags_SizingStretchProp",
+          "ImGuiTableFlags_SizingStretchSame",
+          "ImGuiTableFlags_NoHostExtendX",
+          "ImGuiTableFlags_NoHostExtendY",
+          "ImGuiTableFlags_NoKeepColumnsVisible",
+          "ImGuiTableFlags_PreciseWidths",
+          "ImGuiTableFlags_NoClip",
+          "ImGuiTableFlags_PadOuterX",
+          "ImGuiTableFlags_NoPadOuterX",
+          "ImGuiTableFlags_NoPadInnerX",
+          "ImGuiTableFlags_ScrollX",
+          "ImGuiTableFlags_ScrollY",
+          "ImGuiTableFlags_SortMulti",
+          "ImGuiTableFlags_SortTristate",
+          "ImGuiTableFlags_SizingMask_"
+        ],
+      enum_header = "imgui.h"
+    }
+
+imGuiTableColumnFlags_ :: EnumType
+imGuiTableColumnFlags_ =
+  EnumType
+    { enum_name = "ImGuiTableColumnFlags_",
+      enum_cases =
+        [ "ImGuiTableColumnFlags_None",
+          "ImGuiTableColumnFlags_Disabled",
+          "ImGuiTableColumnFlags_DefaultHide",
+          "ImGuiTableColumnFlags_DefaultSort",
+          "ImGuiTableColumnFlags_WidthStretch",
+          "ImGuiTableColumnFlags_WidthFixed",
+          "ImGuiTableColumnFlags_NoResize",
+          "ImGuiTableColumnFlags_NoReorder",
+          "ImGuiTableColumnFlags_NoHide",
+          "ImGuiTableColumnFlags_NoClip",
+          "ImGuiTableColumnFlags_NoSort",
+          "ImGuiTableColumnFlags_NoSortAscending",
+          "ImGuiTableColumnFlags_NoSortDescending",
+          "ImGuiTableColumnFlags_NoHeaderLabel",
+          "ImGuiTableColumnFlags_NoHeaderWidth",
+          "ImGuiTableColumnFlags_PreferSortAscending",
+          "ImGuiTableColumnFlags_PreferSortDescending",
+          "ImGuiTableColumnFlags_IndentEnable",
+          "ImGuiTableColumnFlags_IndentDisable",
+          "ImGuiTableColumnFlags_IsEnabled",
+          "ImGuiTableColumnFlags_IsVisible",
+          "ImGuiTableColumnFlags_IsSorted",
+          "ImGuiTableColumnFlags_IsHovered",
+          "ImGuiTableColumnFlags_WidthMask_",
+          "ImGuiTableColumnFlags_IndentMask_",
+          "ImGuiTableColumnFlags_StatusMask_",
+          "ImGuiTableColumnFlags_NoDirectResize_"
+        ],
+      enum_header = "imgui.h"
+    }
+
+imGuiTableRowFlags_ :: EnumType
+imGuiTableRowFlags_ =
+  EnumType
+    { enum_name = "ImGuiTableRowFlags_",
+      enum_cases =
+        [ "ImGuiTableRowFlags_None",
+          "ImGuiTableRowFlags_Headers"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imGuiWindowFlags_ :: EnumType
 imGuiWindowFlags_ =
   EnumType
@@ -383,6 +475,9 @@ classes =
 enums =
   [ imDrawFlags_,
     imGuiConfigFlags_,
+    imGuiTableFlags_,
+    imGuiTableColumnFlags_,
+    imGuiTableRowFlags_,
     imGuiWindowFlags_
   ]
 
@@ -419,6 +514,11 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "TextUnformatted" [cstring "text"] Nothing),
+    -- table
+    TLOrdinary (TopLevelFunction bool_ "BeginTable" [cstring "str_id", int "column", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "EndTable" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "TableNextRow" [int "row_flags"] Nothing),
+    -- backend
     TLOrdinary (TopLevelFunction bool_ "ImGui_ImplGlfw_InitForOpenGL" [cppclass gLFWwindow "window", bool "install_callbacks"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_Shutdown" [] Nothing),
