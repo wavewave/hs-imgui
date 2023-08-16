@@ -32,7 +32,6 @@ import ImPlot.Enum
 import qualified ImPlot.TH as TH
 import ImPlot.Template
 import STD.Deletable (delete)
-import StorableInstances ()
 import System.IO.Unsafe (unsafePerformIO)
 import System.Random (randomRIO)
 import Text.Printf (printf)
