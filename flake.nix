@@ -20,10 +20,10 @@
         inherit system;
         config = {
           packageOverrides = self: {
-            imgui = self.callPackage ./imgui/default.nix {
+            imgui = self.callPackage ./nix/imgui/default.nix {
               frameworks = self.darwin.apple_sdk.frameworks;
             };
-            implot = self.callPackage ./implot/default.nix {
+            implot = self.callPackage ./nix/implot/default.nix {
               frameworks = self.darwin.apple_sdk.frameworks;
             };
           };
@@ -44,9 +44,9 @@
       # TODO: use haskell.packages.(ghc).shellFor
       mkShellFor = compiler: let
         hsenv = (hpkgsFor compiler).ghcWithPackages (p: [
-          #p.fficxx
-          #p.fficxx-runtime
-          #p.stdcxx
+          p.fficxx
+          p.fficxx-runtime
+          p.stdcxx
           p.dotgen
           p.optparse-applicative
         ]);
