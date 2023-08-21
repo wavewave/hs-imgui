@@ -82,8 +82,10 @@
           '';
         };
 
-      supportedCompilers = ["ghc927" "ghc945" "ghc962"];
-    in {
+      supportedCompilers = ["ghc962"];
+      defaultCompiler = "ghc962";
+
+    in rec {
       packages =
         pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler)
         // {imgui = pkgs.imgui;};
@@ -91,6 +93,8 @@
       inherit haskellOverlay;
 
       devShells =
-        pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler);
+        pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler) // {
+          default = devShells.${defaultCompiler};
+        };
     });
 }

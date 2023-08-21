@@ -77,7 +77,7 @@ TH.genPlotLine1InstanceFor
 
 showFramerate :: ImGuiIO -> IO ()
 showFramerate io = do
-  begin ("Framerate monitor" :: CString) nullPtr
+  begin ("Framerate monitor" :: CString) nullPtr 0
   framerate :: Float <- realToFrac <$> imGuiIO_Framerate_get io
   withCString (printf "Application average %.3f ms/frame (%.1f FPS)" (1000.0 / framerate) framerate) $ \c_str ->
     textUnformatted c_str
@@ -85,7 +85,7 @@ showFramerate io = do
 
 demoLinePlots :: (Ptr CFloat, Ptr CFloat) -> (Ptr CDouble, Ptr CDouble) -> IO ()
 demoLinePlots (px1, py1) (px2, py2) = do
-  begin ("Line plots" :: CString) nullPtr
+  begin ("Line plots" :: CString) nullPtr 0
   whenM (toBool <$> ImPlot.beginPlot_ ("Line Plots" :: CString)) $ do
     ImPlot.setupAxes
       ("x" :: CString)
@@ -125,7 +125,7 @@ makeSparkline pdat offset = do
 
 demoTables :: IORef Int -> Ptr CFloat -> IO ()
 demoTables ref_offset pdat = do
-  begin ("Table of plots" :: CString) nullPtr
+  begin ("Table of plots" :: CString) nullPtr 0
   let flags =
         fromIntegral $
           fromEnum ImGuiTableFlags_BordersOuter
@@ -133,25 +133,25 @@ demoTables ref_offset pdat = do
             .|. fromEnum ImGuiTableFlags_RowBg
             .|. fromEnum ImGuiTableFlags_Resizable
             .|. fromEnum ImGuiTableFlags_Reorderable
-  beginTable ("##table" :: CString) 3 (fromIntegral flags)
-  tableSetupColumn ("Electrode" :: CString) (fromIntegral (fromEnum ImGuiTableColumnFlags_WidthFixed)) 75.0
-  tableSetupColumn ("Voltage" :: CString) (fromIntegral (fromEnum ImGuiTableColumnFlags_WidthFixed)) 75.0
-  tableSetupColumn_ ("EMG Signal" :: CString)
-  tableHeadersRow
-  offset <- readIORef ref_offset
-  for_ [0 .. 9] $ \(row :: Int) -> do
-    let offset' = (offset + row * 10) `mod` 100
-    tableNextRow 0
-    tableSetColumnIndex 0
-    textUnformatted (fromString (printf "EMG %d" row) :: CString)
-    tableSetColumnIndex 1
-    val :: Float <- realToFrac <$> peekElemOff pdat offset'
-    textUnformatted (fromString (printf "%.3f V" val) :: CString)
-    tableSetColumnIndex 2
-    pushID (fromIntegral row)
-    makeSparkline pdat offset'
-    popID
-  endTable
+  whenM (toBool <$> beginTable ("##table" :: CString) 3 (fromIntegral flags)) $ do
+    tableSetupColumn ("Electrode" :: CString) (fromIntegral (fromEnum ImGuiTableColumnFlags_WidthFixed)) 75.0
+    tableSetupColumn ("Voltage" :: CString) (fromIntegral (fromEnum ImGuiTableColumnFlags_WidthFixed)) 75.0
+    tableSetupColumn_ ("EMG Signal" :: CString)
+    tableHeadersRow
+    offset <- readIORef ref_offset
+    for_ [0 .. 9] $ \(row :: Int) -> do
+      let offset' = (offset + row * 10) `mod` 100
+      tableNextRow 0
+      tableSetColumnIndex 0
+      textUnformatted (fromString (printf "EMG %d" row) :: CString)
+      tableSetColumnIndex 1
+      val :: Float <- realToFrac <$> peekElemOff pdat offset'
+      textUnformatted (fromString (printf "%.3f V" val) :: CString)
+      tableSetColumnIndex 2
+      pushID (fromIntegral row)
+      makeSparkline pdat offset'
+      popID
+    endTable
   end
 
 main :: IO ()

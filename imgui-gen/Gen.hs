@@ -483,7 +483,7 @@ enums =
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
-  [ TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open"] Nothing),
+  [ TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "BeginTabBar" [cstring "str_id"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "BeginTabItem" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),

@@ -98,7 +98,7 @@ main = do
           -- 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
 
           -- Create a window called "Hello, world!" and append into it.
-          begin ("Hello, world!" :: CString) nullPtr
+          begin ("Hello, world!" :: CString) nullPtr 0
           -- Display some text (you can use a format strings too)
           textUnformatted ("This is some useful text." :: CString)
           -- Edit bools storing our window open/close state
@@ -127,7 +127,7 @@ main = do
           -- 3. Show another simple window.
           whenM (toBool <$> peek p_showAnotherWindow) $ do
             -- Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            begin ("Another Window" :: CString) p_showAnotherWindow
+            begin ("Another Window" :: CString) p_showAnotherWindow 0
             textUnformatted ("Hello from another window!" :: CString)
             whenM (toBool <$> button ("Close Me" :: CString)) $
               poke p_showAnotherWindow (fromBool False)

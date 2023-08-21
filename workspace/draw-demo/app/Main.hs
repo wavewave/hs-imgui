@@ -39,7 +39,7 @@ instance IsString CString where
 -- Demonstrate using the low-level ImDrawList to draw custom shapes.
 showExampleAppCustomRendering :: ImVec4 -> IO ()
 showExampleAppCustomRendering colf = do
-  begin ("Custom rendering" :: CString) nullPtr
+  begin ("Custom rendering" :: CString) nullPtr 0
   beginTabBar ("##TabBar" :: CString)
   whenM (toBool <$> beginTabItem ("Primitives" :: CString)) $ do
     fontSize <- getFontSize
@@ -50,21 +50,8 @@ showExampleAppCustomRendering colf = do
     -- (note that those are currently exacerbating our sRGB/Linear issues)
     -- Calling ImGui::GetColorU32() multiplies the given colors by the current Style Alpha, but you may pass the IM_COL32() directly as well..
 
-    {- textUnformatted ("Gradients"::CString)
-    w <- calcItemWidth
-    h <- getFrameHeight
-    gradient_size <- newImVec2 w h
-    ...
-    -}
-
     -- Draw a bunch of primitives
     textUnformatted ("All primitives" :: CString)
-    {- let sz = 36.0
-        thickness = 3.0
-        int ngon_side = 6
-        circle_segments_override = False
-        ..
-     -}
     let sz = 36.0
         circle_segments = 0
         thickness = 3.0
