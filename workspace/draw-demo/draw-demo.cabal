@@ -30,4 +30,3 @@ executable draw-demo
     hs-source-dirs:   app
     cxx-sources:      csrc/shim.cpp
     default-language: GHC2021
-    ghc-options:      -framework OpenGL

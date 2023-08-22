@@ -157,7 +157,7 @@ cabal =
       cabal_extraincludedirs = [],
       cabal_extralibdirs = [],
       cabal_extrafiles = [],
-      cabal_pkg_config_depends = ["libimplot", "libimgui", "glfw3"],
+      cabal_pkg_config_depends = ["libimplot"],
       cabal_buildType = Simple
     }
 

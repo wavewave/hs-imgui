@@ -1,5 +1,5 @@
 optional-packages:
-  ./imgui
-  ./implot
+  -- ./imgui
+  -- ./implot
   ./plot-demo
   ./draw-demo

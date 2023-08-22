@@ -9,8 +9,18 @@ in
       ghc Gen.hs
       ./Gen gen -t ./template
     '';
-    installPhase = ''
-      mkdir -p $out
-      cp -a imgui/* $out
-    '';
+    installPhase =
+      ''
+        mkdir -p $out
+        cp -a imgui/* $out
+      ''
+      + (
+        if stdenv.isDarwin
+        then ''
+          substituteInPlace $out/imgui.cabal --replace "  extra-libraries:" "  framework: OpenGL"
+        ''
+        else ''
+          substituteInPlace $out/imgui.cabal --replace "  extra-libraries:" "  extra-libraries: GL"
+        ''
+      );
   }

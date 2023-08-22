@@ -30,5 +30,3 @@ executable plot-demo
                       stdcxx
     hs-source-dirs:   app
     default-language: GHC2021
-    ghc-options:      -framework OpenGL
-    -- extra-libraries:  OpenGL

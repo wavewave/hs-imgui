@@ -12,6 +12,9 @@ in rec {
     pkg-config,
     imguiLib,
     glfw3,
+    libX11 ? null,
+    libXau ? null,
+    libXdmcp ? null,
   }:
     mkDerivation {
       pname = "imgui";
@@ -19,7 +22,14 @@ in rec {
       src = imgui-src;
       libraryToolDepends = [pkg-config];
       libraryHaskellDepends = [base fficxx-runtime stdcxx];
-      librarySystemDepends = [imguiLib glfw3];
+      librarySystemDepends = [imguiLib glfw3 libX11 libXau libXdmcp];
       license = pkgs.lib.licenses.bsd3;
-    }) {imguiLib = pkgs.imgui;};
+    }) ({imguiLib = pkgs.imgui;}
+    // (
+      if pkgs.stdenv.isLinux
+      then {
+        inherit (pkgs.xorg) libX11 libXau libXdmcp;
+      }
+      else {}
+    ));
 }

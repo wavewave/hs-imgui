@@ -46,6 +46,8 @@
           p.stdcxx
           p.dotgen
           p.optparse-applicative
+	  p.imgui
+	  p.implot
         ]);
         pyenv =
           pkgs.python3.withPackages
