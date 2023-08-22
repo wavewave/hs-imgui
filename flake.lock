@@ -10,11 +10,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1690582437,
-        "narHash": "sha256-GFcfVYDeJ3F2Rgjm2PfUVMvBAycWCEWPZFkE/5yECV8=",
+        "lastModified": 1692170079,
+        "narHash": "sha256-4GXbsAA4LFqbP7xk8A0tRl5bEQxkS0gx+ckINIQ3sD4=",
         "owner": "wavewave",
         "repo": "fficxx",
-        "rev": "f32cb4e1149d43b778a3772f6c033b3da70635b4",
+        "rev": "7c06b4bca1d574cb10ddc3bfadb73462febfb19a",
         "type": "github"
       },
       "original": {

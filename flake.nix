@@ -30,7 +30,9 @@
         };
       };
 
-      haskellOverlay = final: hself: hsuper: {};
+      haskellOverlay = final: hself: hsuper:
+        (import ./imgui-gen/default.nix {pkgs = final;} hself hsuper)
+        // (import ./implot-gen/default.nix {pkgs = final;} hself hsuper);
 
       hpkgsFor = compiler:
         pkgs.haskell.packages.${compiler}.extend (hself: hsuper: (fficxx.haskellOverlay.${system} pkgs hself hsuper
@@ -84,16 +86,15 @@
 
       supportedCompilers = ["ghc962"];
       defaultCompiler = "ghc962";
-
     in rec {
       packages =
-        pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler)
-        // {imgui = pkgs.imgui;};
+        pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
 
       inherit haskellOverlay;
 
       devShells =
-        pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler) // {
+        pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler)
+        // {
           default = devShells.${defaultCompiler};
         };
     });
