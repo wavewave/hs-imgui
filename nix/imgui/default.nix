@@ -5,6 +5,7 @@
   pkg-config,
   frameworks,
   glfw,
+  libGL ? null,
 }:
 stdenv.mkDerivation rec {
   pname = "imgui";
@@ -19,23 +20,42 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [pkg-config];
 
-  buildInputs = [
-    glfw
-    frameworks.Cocoa
-    frameworks.Metal
-    frameworks.MetalKit
-  ];
+  buildInputs =
+    [
+      glfw
+    ]
+    ++ (
+      if stdenv.isDarwin
+      then [
+        frameworks.Cocoa
+        frameworks.Metal
+        frameworks.MetalKit
+      ]
+      else [libGL]
+    );
 
-  buildPhase = ''
-    $CXX -std=c++11 -I. -I./backends -c imgui.cpp
-    $CXX -std=c++11 -I. -I./backends -c imgui_demo.cpp
-    $CXX -std=c++11 -I. -I./backends -c imgui_draw.cpp
-    $CXX -std=c++11 -I. -I./backends -c imgui_tables.cpp
-    $CXX -std=c++11 -I. -I./backends -c imgui_widgets.cpp
-    $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_glfw.cpp
-    $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_opengl3.cpp
-    $CXX -dynamiclib -undefined suppress -flat_namespace -install_name $out/lib/libimgui.dylib -o libimgui.dylib imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_glfw.o imgui_impl_opengl3.o
-  '';
+  buildPhase =
+    if stdenv.isDarwin
+    then ''
+      $CXX -std=c++11 -I. -I./backends -c imgui.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_demo.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_draw.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_tables.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_widgets.cpp
+      $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_glfw.cpp
+      $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_opengl3.cpp
+      $CXX -dynamiclib -undefined suppress -flat_namespace -install_name $out/lib/libimgui.dylib -o libimgui.dylib imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_glfw.o imgui_impl_opengl3.o
+    ''
+    else ''
+      $CXX -std=c++11 -I. -I./backends -c imgui.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_demo.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_draw.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_tables.cpp
+      $CXX -std=c++11 -I. -I./backends -c imgui_widgets.cpp
+      $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_glfw.cpp
+      $CXX -std=c++11 -I. -I./backends -c backends/imgui_impl_opengl3.cpp
+      $CXX -shared -o libimgui.so imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_glfw.o imgui_impl_opengl3.o
+    '';
 
   installPhase = ''
     mkdir -p $out/include/imgui
@@ -43,7 +63,7 @@ stdenv.mkDerivation rec {
     cp *.h $out/include/imgui
     cp -a backends/*.h $out/include/imgui/
     cp -a misc $out/include/imgui/
-    cp libimgui.dylib $out/lib
+    cp libimgui.* $out/lib
 
     mkdir -p $out/lib/pkgconfig
     cat >> $out/lib/pkgconfig/libimgui.pc << EOF

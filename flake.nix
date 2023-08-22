@@ -36,11 +36,6 @@
 
       hpkgsFor = compiler:
         pkgs.haskell.packages.${compiler}.extend (hself: hsuper: (fficxx.haskellOverlay.${system} pkgs hself hsuper
-          // {
-            "ormolu" =
-              pkgs.haskell.lib.overrideCabal hsuper.ormolu
-              (drv: {enableSeparateBinOutput = false;});
-          }
           // haskellOverlay pkgs hself hsuper));
 
       # TODO: use haskell.packages.(ghc).shellFor
@@ -67,8 +62,6 @@
               pkgs.alejandra
               pkgs.pkgconfig
               pkgs.graphviz
-              # this is due to https://github.com/NixOS/nixpkgs/issues/140774
-              (hpkgsFor "ghc927").ormolu
             ]
             ++ pkgs.lib.optional pkgs.stdenv.isLinux pkgs.mesa
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
@@ -79,8 +72,6 @@
             ];
           shellHook = ''
             export PS1="\n[hs-imgui:\w]$ \0"
-            #export DYLD_LIBRARY_PATH=${pkgs.imgui}/lib:$DYLD_LIBRARY_PATH
-            #export IMGUI=${pkgs.imgui}
           '';
         };
 
@@ -88,7 +79,10 @@
       defaultCompiler = "ghc962";
     in rec {
       packages =
-        pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
+        pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler)
+        // {
+          inherit (pkgs) imgui implot;
+        };
 
       inherit haskellOverlay;
 
