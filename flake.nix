@@ -63,7 +63,12 @@
               pkgs.pkgconfig
               pkgs.graphviz
             ]
-            ++ pkgs.lib.optional pkgs.stdenv.isLinux pkgs.mesa
+            ++ pkgs.lib.optionals pkgs.stdenv.isLinux
+	    [ pkgs.mesa
+	      pkgs.xorg.libX11
+	      pkgs.xorg.libXau
+	      pkgs.xorg.libXdmcp
+	    ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
             [
               pkgs.darwin.apple_sdk.frameworks.Cocoa
