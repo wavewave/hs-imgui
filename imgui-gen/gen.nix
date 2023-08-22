@@ -17,7 +17,7 @@ in
       + (
         if stdenv.isDarwin
         then ''
-          substituteInPlace $out/imgui.cabal --replace "  extra-libraries:" "  framework: OpenGL"
+          substituteInPlace $out/imgui.cabal --replace "  extra-libraries:" "  frameworks: OpenGL"
         ''
         else ''
           substituteInPlace $out/imgui.cabal --replace "  extra-libraries:" "  extra-libraries: GL"
