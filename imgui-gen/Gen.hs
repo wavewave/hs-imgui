@@ -208,6 +208,37 @@ imDrawList =
     []
     False
 
+imFont :: Class
+imFont =
+  Class
+    cabal
+    "ImFont"
+    [deletable]
+    mempty
+    Nothing
+    [ Constructor [] Nothing
+    ]
+    [ Variable (float "Scale")
+    ]
+    []
+    False
+
+imFontAtlas :: Class
+imFontAtlas =
+  Class
+    cabal
+    "ImFontAtlas"
+    [deletable]
+    mempty
+    Nothing
+    [ Constructor [] Nothing,
+      NonVirtual (cppclass_ imFont) "AddFontDefault" [] Nothing,
+      NonVirtual (cppclass_ imFont) "AddFontFromFileTTF" [cstring "filename", float "size_pixels"] Nothing
+    ]
+    []
+    []
+    False
+
 imGuiContext :: Class
 imGuiContext =
   Class
@@ -231,7 +262,8 @@ imGuiIO =
     Nothing
     []
     [ Variable (int "ConfigFlags"),
-      Variable (float "Framerate")
+      Variable (float "Framerate"),
+      Variable (cppclass imFontAtlas "Fonts")
     ]
     []
     False
@@ -465,6 +497,8 @@ classes =
     imColor,
     imDrawData,
     imDrawList,
+    imFont,
+    imFontAtlas,
     imGuiContext,
     imGuiIO,
     imGuiTextBuffer,
@@ -504,16 +538,22 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PushItemWidth" [float "item_width"] Nothing),
     TLOrdinary (TopLevelFunction float_ "CalcItemWidth" [] Nothing),
-    TLOrdinary (TopLevelFunction float_ "GetFontSize" [] Nothing),
     TLOrdinary (TopLevelFunction float_ "GetFrameHeight" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "Render" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "SameLine" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "Dummy" [cppclassref imVec2 "size"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "SliderFloat" [cstring "label", star CTFloat "v", float "v_min", float "v_max"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "TextUnformatted" [cstring "text"] Nothing),
+    -- Color
     TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "TextUnformatted" [cstring "text"] Nothing),
+    TLOrdinary (TopLevelFunction uint_ "ColorConvertFloat4ToU32" [cppclassref imVec4 "in"] Nothing),
+    -- Font
+    TLOrdinary (TopLevelFunction (cppclass_ imFont) "GetFont" [] Nothing),
+    TLOrdinary (TopLevelFunction float_ "GetFontSize" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "PushFont" [cppclass imFont "font"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "PopFont" [] Nothing),
     -- ID
     TLOrdinary (TopLevelFunction void_ "PushID" [int "int_id"] Nothing),
     TLOrdinary (TopLevelFunction void_ "PopID" [] Nothing),
@@ -570,6 +610,8 @@ headers =
     modImports "ImColor" [] ["imgui.h"],
     modImports "ImDrawData" [] ["imgui.h"],
     modImports "ImDrawList" [] ["imgui.h"],
+    modImports "ImFont" [] ["imgui.h"],
+    modImports "ImFontAtlas" [] ["imgui.h"],
     modImports "ImGuiContext" [] ["imgui.h"],
     modImports "ImGuiIO" [] ["imgui.h"],
     modImports "ImGuiTextBuffer" [] ["imgui.h"],
