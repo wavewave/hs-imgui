@@ -72,6 +72,7 @@
               pkgs.alejandra
               pkgs.pkgconfig
               pkgs.graphviz
+              pkgs.ormolu
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isLinux
             [

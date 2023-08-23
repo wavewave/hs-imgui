@@ -27,9 +27,9 @@ import ImGui.ImGuiIO.Implementation
   )
 import ImGui.ImVec2.Implementation (imVec2_x_get, imVec2_y_get)
 import ImGui.ImVec4.Implementation (imVec4_w_get, imVec4_x_get, imVec4_y_get, imVec4_z_get)
-import qualified ImPlot
+import ImPlot qualified
 import ImPlot.Enum
-import qualified ImPlot.TH as TH
+import ImPlot.TH qualified as TH
 import ImPlot.Template
 import STD.Deletable (delete)
 import System.IO.Unsafe (unsafePerformIO)
@@ -75,6 +75,23 @@ TH.genPlotLine1InstanceFor
       }
   )
 
+makeSparkline :: Ptr CFloat -> Int -> IO ()
+makeSparkline pdat offset = do
+  spark_size <- newImVec2 (-1) 35
+  zero <- newImVec2 0 0
+  ImPlot.pushStyleVar (fromIntegral (fromEnum ImPlotStyleVar_PlotPadding)) zero
+  let spark_flags =
+        fromIntegral $
+          fromEnum ImPlotFlags_CanvasOnly
+            .|. fromEnum ImPlotFlags_NoChild
+      no_deco = fromIntegral (fromEnum ImPlotAxisFlags_NoDecorations)
+  whenM (toBool <$> ImPlot.beginPlot ("1" :: CString) spark_size spark_flags) $ do
+    ImPlot.setupAxes (nullPtr :: CString) (nullPtr :: CString) no_deco no_deco
+    plotLine1 "##spark" pdat 100 1 0 0 (fromIntegral offset)
+    ImPlot.endPlot
+  delete spark_size
+  delete zero
+
 showFramerate :: ImGuiIO -> IO ()
 showFramerate io = do
   begin ("Framerate monitor" :: CString) nullPtr 0
@@ -84,8 +101,7 @@ showFramerate io = do
   end
 
 demoLinePlots :: (Ptr CFloat, Ptr CFloat) -> (Ptr CDouble, Ptr CDouble) -> IO ()
-demoLinePlots (px1, py1) (px2, py2) = do
-  begin ("Line plots" :: CString) nullPtr 0
+demoLinePlots (px1, py1) (px2, py2) =
   whenM (toBool <$> ImPlot.beginPlot_ ("Line Plots" :: CString)) $ do
     ImPlot.setupAxes
       ("x" :: CString)
@@ -104,28 +120,9 @@ demoLinePlots (px1, py1) (px2, py2) = do
       pokeElemOff py2 i (x * x)
     plotLine "g(x)" px2 py2 20
     ImPlot.endPlot
-  end
-
-makeSparkline :: Ptr CFloat -> Int -> IO ()
-makeSparkline pdat offset = do
-  spark_size <- newImVec2 (-1) 35
-  zero <- newImVec2 0 0
-  ImPlot.pushStyleVar (fromIntegral (fromEnum ImPlotStyleVar_PlotPadding)) zero
-  let spark_flags =
-        fromIntegral $
-          fromEnum ImPlotFlags_CanvasOnly
-            .|. fromEnum ImPlotFlags_NoChild
-      no_deco = fromIntegral (fromEnum ImPlotAxisFlags_NoDecorations)
-  whenM (toBool <$> ImPlot.beginPlot ("1" :: CString) spark_size spark_flags) $ do
-    ImPlot.setupAxes (nullPtr :: CString) (nullPtr :: CString) no_deco no_deco
-    plotLine1 "##spark" pdat 100 1 0 0 (fromIntegral offset)
-    ImPlot.endPlot
-  delete spark_size
-  delete zero
 
 demoTables :: IORef Int -> Ptr CFloat -> IO ()
 demoTables ref_offset pdat = do
-  begin ("Table of plots" :: CString) nullPtr 0
   let flags =
         fromIntegral $
           fromEnum ImGuiTableFlags_BordersOuter
@@ -152,7 +149,6 @@ demoTables ref_offset pdat = do
       makeSparkline pdat offset'
       popID
     endTable
-  end
 
 main :: IO ()
 main = do
@@ -218,8 +214,17 @@ main = do
               newFrame
 
               showFramerate io
-              demoLinePlots (px1, py1) (px2, py2)
-              demoTables ref_offset pdat
+              begin ("demo plot" :: CString) nullPtr 0
+              beginTabBar ("##Tab" :: CString)
+              whenM (toBool <$> beginTabItem ("Line plots" :: CString)) $ do
+                demoLinePlots (px1, py1) (px2, py2)
+                endTabItem
+              whenM (toBool <$> beginTabItem ("Table of plots" :: CString)) $ do
+                demoTables ref_offset pdat
+                endTabItem
+              endTabBar
+              end
+
               render
 
               -- c_draw_shim window clear_color
