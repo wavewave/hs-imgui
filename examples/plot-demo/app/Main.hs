@@ -23,6 +23,7 @@ import ImGui.Enum
 import ImGui.ImGuiIO.Implementation
   ( imGuiIO_ConfigFlags_get,
     imGuiIO_ConfigFlags_set,
+    imGuiIO_DeltaTime_get,
     imGuiIO_Framerate_get,
   )
 import ImGui.ImVec2.Implementation (imVec2_x_get, imVec2_y_get)
@@ -221,6 +222,17 @@ main = do
                 endTabItem
               whenM (toBool <$> beginTabItem ("Table of plots" :: CString)) $ do
                 demoTables ref_offset pdat
+                endTabItem
+              whenM (toBool <$> beginTabItem ("Real-time" :: CString)) $ do
+                v <- getMousePos
+                x <- realToFrac @_ @Double <$> imVec2_x_get v
+                y <- realToFrac @_ @Double <$> imVec2_y_get v
+                dt <- realToFrac @_ @Double <$> imGuiIO_DeltaTime_get io
+                let msg =
+                      "current mouse position: (x, y) = (%.2f, %.2f)\n\
+                      \delta T between frame is %.5f"
+                withCString (printf msg x y dt) $ \c_str ->
+                  textUnformatted c_str
                 endTabItem
               endTabBar
               end

@@ -262,6 +262,7 @@ imGuiIO =
     Nothing
     []
     [ Variable (int "ConfigFlags"),
+      Variable (float "DeltaTime"),
       Variable (float "Framerate"),
       Variable (cppclass imFontAtlas "Fonts")
     ]
@@ -530,10 +531,13 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "EndTabBar" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "EndTabItem" [] Nothing),
+    -- draw data/list
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
+    -- IO query
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction double_ "GetTime" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMousePos" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PushItemWidth" [float "item_width"] Nothing),
