@@ -227,6 +227,7 @@ main = do
                 v <- getMousePos
                 x <- realToFrac @_ @Double <$> imVec2_x_get v
                 y <- realToFrac @_ @Double <$> imVec2_y_get v
+                delete v
                 dt <- realToFrac @_ @Double <$> imGuiIO_DeltaTime_get io
                 let msg =
                       "current mouse position: (x, y) = (%.2f, %.2f)\n\

@@ -36,243 +36,253 @@ foreign import ccall unsafe "toImU32"
 instance IsString CString where
   fromString s = unsafePerformIO $ newCString s
 
+showPrimitives :: ImVec4 -> IO ()
+showPrimitives colf = do
+  fontSize <- getFontSize
+  pushItemWidth (-fontSize * 15)
+  draw_list <- getWindowDrawList
+
+  -- Draw gradients
+  -- (note that those are currently exacerbating our sRGB/Linear issues)
+  -- Calling ImGui::GetColorU32() multiplies the given colors by the current Style Alpha, but you may pass the IM_COL32() directly as well..
+
+  -- Draw a bunch of primitives
+  textUnformatted ("All primitives" :: CString)
+  let sz = 36.0
+      circle_segments = 0
+      thickness = 3.0
+      ngon_sides = 6
+      spacing = 10
+      corners_tl_br =
+        fromEnum ImDrawFlags_RoundCornersTopLeft
+          .|. fromEnum ImDrawFlags_RoundCornersBottomRight
+      rounding = sz / 5.0
+      curve_segments = 0
+  colorEdit4 ("Color" :: CString) (castPtr (get_fptr colf))
+  p <- getCursorScreenPos
+  px <- imVec2_x_get p
+  py <- imVec2_y_get p
+  let x = px + 4
+      y = py + 4
+  col_ <- newImColor colf
+  col <- c_toImU32 col_
+  for_ [0, 1] $ \n -> do
+    let th
+          | n == 0 = 1
+          | otherwise = thickness
+    let ngon (x', y') = do
+          v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
+          imDrawList_AddNgon draw_list v (sz * 0.5) col ngon_sides th
+          delete v
+        circle (x', y') = do
+          v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
+          imDrawList_AddCircle draw_list v (sz * 0.5) col circle_segments th
+          delete v
+        rect rnd flag (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + sz) (y' + sz)
+          imDrawList_AddRect draw_list v1 v2 col rnd flag th
+          delete v1
+          delete v2
+        triangle (x', y') = do
+          v1 <- newImVec2 (x' + sz * 0.5) y'
+          v2 <- newImVec2 (x' + sz) (y' + sz - 0.5)
+          v3 <- newImVec2 x' (y' + sz - 0.5)
+          imDrawList_AddTriangle draw_list v1 v2 v3 col th
+          delete v1
+          delete v2
+          delete v3
+        horiz (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + sz) y'
+          imDrawList_AddLine draw_list v1 v2 col th
+          delete v1
+          delete v2
+        vert (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 x' (y' + sz)
+          imDrawList_AddLine draw_list v1 v2 col th
+          delete v1
+          delete v2
+        diag (x', y') = do
+          v1 <- newImVec2 x' y'
+          v2 <- newImVec2 (x' + sz) (y' + sz)
+          imDrawList_AddLine draw_list v1 v2 col th
+          delete v1
+          delete v2
+        quadBezier (x', y') = do
+          p1 <- newImVec2 x' (y' + sz * 0.6)
+          p2 <- newImVec2 (x' + sz * 0.5) (y' - sz * 0.4)
+          p3 <- newImVec2 (x' + sz) (y' + sz)
+          imDrawList_AddBezierQuadratic draw_list p1 p2 p3 col th curve_segments
+          traverse_ delete [p1, p2, p3]
+        quadCubic (x', y') = do
+          p1 <- newImVec2 x' y'
+          p2 <- newImVec2 (x' + sz * 1.3) (y' + sz * 0.3)
+          p3 <- newImVec2 (x' + sz - sz * 1.3) (y' + sz - sz * 0.3)
+          p4 <- newImVec2 (x' + sz) (y' + sz)
+          imDrawList_AddBezierCubic draw_list p1 p2 p3 p4 col th curve_segments
+          traverse_ delete [p1, p2, p3, p4]
+        -- my new example
+        polyLine (x', y') =
+          let nElems = 4
+           in allocaArray nElems $ \(pp :: Ptr ImVec2) -> do
+                p0 <- newImVec2 x' y'
+                p1 <- newImVec2 (x' + sz * 1.3) (y' + sz * 0.3)
+                p2 <- newImVec2 (x' + sz - sz * 1.3) (y' + sz - sz * 0.3)
+                p3 <- newImVec2 (x' + sz) (y' + sz)
+                pokeElemOff pp 0 p0
+                pokeElemOff pp 1 p1
+                pokeElemOff pp 2 p2
+                pokeElemOff pp 3 p3
+                let p :: ImVec2 = (cast_fptr_to_obj (castPtr pp))
+                imDrawList_AddPolyline draw_list p (fromIntegral nElems) col 0 th
+                traverse_ delete [p0, p1, p2, p3]
+        drawShapes =
+          [ -- N-gon
+            ngon,
+            -- Circle
+            circle,
+            -- Square
+            rect 0.0 (fromIntegral (fromEnum ImDrawFlags_None)),
+            -- Square with all rounded corners
+            rect rounding (fromIntegral (fromEnum ImDrawFlags_None)),
+            -- Square with two rounded corners
+            rect rounding (fromIntegral corners_tl_br),
+            -- Triangle
+            triangle,
+            -- Horizontal line (note: drawing a filled rectangle will be faster!)
+            horiz,
+            -- Vertical line (note: drawing a filled rectangle will be faster!)
+            vert,
+            -- Diagonal line
+            diag,
+            -- Quadratic Bezier Curve (3 control points)
+            quadBezier,
+            -- Cubic Bezier Curve (4 control points)
+            quadCubic,
+            -- a new example with polyline
+            polyLine
+          ]
+    let y' = y + n * (sz + spacing)
+    for_ (zip [0 ..] drawShapes) $ \(m, drawShape) -> do
+      let x' = x + m * (sz + spacing)
+      drawShape (x', y')
+
+  let ngonF (x', y') = do
+        v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
+        imDrawList_AddNgonFilled draw_list v (sz * 0.5) col ngon_sides
+        delete v
+      circleF (x', y') = do
+        v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
+        imDrawList_AddCircleFilled draw_list v (sz * 0.5) col circle_segments
+        delete v
+      rectF rnd flag (x', y') = do
+        v1 <- newImVec2 x' y'
+        v2 <- newImVec2 (x' + sz) (y' + sz)
+        imDrawList_AddRectFilled draw_list v1 v2 col rnd flag
+        delete v1
+        delete v2
+      triangleF (x', y') = do
+        v1 <- newImVec2 (x' + sz * 0.5) y'
+        v2 <- newImVec2 (x' + sz) (y' + sz - 0.5)
+        v3 <- newImVec2 x' (y' + sz - 0.5)
+        imDrawList_AddTriangleFilled draw_list v1 v2 v3 col
+        delete v1
+        delete v2
+        delete v3
+      horizF (x', y') = do
+        v1 <- newImVec2 x' y'
+        v2 <- newImVec2 (x' + sz) (y' + thickness)
+        imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
+        delete v1
+        delete v2
+      vertF (x', y') = do
+        v1 <- newImVec2 x' y'
+        v2 <- newImVec2 (x' + thickness) (y' + sz)
+        imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
+        delete v1
+        delete v2
+      pixelF (x', y') = do
+        v1 <- newImVec2 x' y'
+        v2 <- newImVec2 (x' + 1) (y' + 1)
+        imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
+        delete v1
+        delete v2
+      multiColorF (x', y') = do
+        v1 <- newImVec2 x' y'
+        v2 <- newImVec2 (x' + sz) (y' + sz)
+        let withColor r g b a f = do
+              colf <- newImVec4 r g b a
+              col_ <- newImColor colf
+              col <- c_toImU32 col_
+              f col
+              delete col_
+              delete colf
+        withColor 0 0 0 1 $ \col1 ->
+          withColor 1 0 0 1 $ \col2 ->
+            withColor 1 1 0 1 $ \col3 ->
+              withColor 0 1 0 1 $ \col4 ->
+                imDrawList_AddRectFilledMultiColor draw_list v1 v2 col1 col2 col3 col4
+        delete v1
+        delete v2
+
+      drawShapesFilled =
+        [ -- N-gon
+          ngonF,
+          -- Circle
+          circleF,
+          -- Square
+          rectF 0.0 (fromIntegral (fromEnum ImDrawFlags_None)),
+          -- Square with all rounded corners
+          rectF rounding (fromIntegral (fromEnum ImDrawFlags_None)),
+          -- Square with two rounded corners
+          rectF rounding (fromIntegral corners_tl_br),
+          -- Triangle
+          triangleF,
+          -- Horizontal line (faster than AddLine, but only handle integer thickness)
+          horizF,
+          -- Vertical line (faster than AddLine, but only handle integer thickness)
+          vertF,
+          -- Pixel (faster than AddLine)
+          pixelF,
+          -- gradient
+          multiColorF
+        ]
+  let y'' = y + 2 * (sz + spacing)
+  for_ (zip [0 ..] drawShapesFilled) $ \(m, drawShape) -> do
+    let x'' = x + m * (sz + spacing)
+    drawShape (x'', y'')
+
+  dummy_sz <- newImVec2 ((sz + spacing) * 11.2) ((sz + spacing) * 3.0)
+  dummy dummy_sz
+  textUnformatted ("dummy takes space like this" :: CString)
+
+  p' <- getCursorScreenPos
+  px' <- imVec2_x_get p'
+  py' <- imVec2_y_get p'
+  let x3 = px' + 4
+      y3 = py' + 4
+  v' <- newImVec2 x3 y3
+  imDrawList_AddText draw_list v' col ("This is drawn using AddText!" :: CString)
+
+  popItemWidth
+
 -- Demonstrate using the low-level ImDrawList to draw custom shapes.
 showExampleAppCustomRendering :: ImVec4 -> IO ()
 showExampleAppCustomRendering colf = do
   begin ("Custom rendering" :: CString) nullPtr 0
   beginTabBar ("##TabBar" :: CString)
   whenM (toBool <$> beginTabItem ("Primitives" :: CString)) $ do
-    fontSize <- getFontSize
-    pushItemWidth (-fontSize * 15)
-    draw_list <- getWindowDrawList
-
-    -- Draw gradients
-    -- (note that those are currently exacerbating our sRGB/Linear issues)
-    -- Calling ImGui::GetColorU32() multiplies the given colors by the current Style Alpha, but you may pass the IM_COL32() directly as well..
-
-    -- Draw a bunch of primitives
-    textUnformatted ("All primitives" :: CString)
-    let sz = 36.0
-        circle_segments = 0
-        thickness = 3.0
-        ngon_sides = 6
-        spacing = 10
-        corners_tl_br =
-          fromEnum ImDrawFlags_RoundCornersTopLeft
-            .|. fromEnum ImDrawFlags_RoundCornersBottomRight
-        rounding = sz / 5.0
-        curve_segments = 0
-    colorEdit4 ("Color" :: CString) (castPtr (get_fptr colf))
-    p <- getCursorScreenPos
-    px <- imVec2_x_get p
-    py <- imVec2_y_get p
-    let x = px + 4
-        y = py + 4
-    col_ <- newImColor colf
-    col <- c_toImU32 col_
-    for_ [0, 1] $ \n -> do
-      let th
-            | n == 0 = 1
-            | otherwise = thickness
-      let ngon (x', y') = do
-            v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
-            imDrawList_AddNgon draw_list v (sz * 0.5) col ngon_sides th
-            delete v
-          circle (x', y') = do
-            v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
-            imDrawList_AddCircle draw_list v (sz * 0.5) col circle_segments th
-            delete v
-          rect rnd flag (x', y') = do
-            v1 <- newImVec2 x' y'
-            v2 <- newImVec2 (x' + sz) (y' + sz)
-            imDrawList_AddRect draw_list v1 v2 col rnd flag th
-            delete v1
-            delete v2
-          triangle (x', y') = do
-            v1 <- newImVec2 (x' + sz * 0.5) y'
-            v2 <- newImVec2 (x' + sz) (y' + sz - 0.5)
-            v3 <- newImVec2 x' (y' + sz - 0.5)
-            imDrawList_AddTriangle draw_list v1 v2 v3 col th
-            delete v1
-            delete v2
-            delete v3
-          horiz (x', y') = do
-            v1 <- newImVec2 x' y'
-            v2 <- newImVec2 (x' + sz) y'
-            imDrawList_AddLine draw_list v1 v2 col th
-            delete v1
-            delete v2
-          vert (x', y') = do
-            v1 <- newImVec2 x' y'
-            v2 <- newImVec2 x' (y' + sz)
-            imDrawList_AddLine draw_list v1 v2 col th
-            delete v1
-            delete v2
-          diag (x', y') = do
-            v1 <- newImVec2 x' y'
-            v2 <- newImVec2 (x' + sz) (y' + sz)
-            imDrawList_AddLine draw_list v1 v2 col th
-            delete v1
-            delete v2
-          quadBezier (x', y') = do
-            p1 <- newImVec2 x' (y' + sz * 0.6)
-            p2 <- newImVec2 (x' + sz * 0.5) (y' - sz * 0.4)
-            p3 <- newImVec2 (x' + sz) (y' + sz)
-            imDrawList_AddBezierQuadratic draw_list p1 p2 p3 col th curve_segments
-            traverse_ delete [p1, p2, p3]
-          quadCubic (x', y') = do
-            p1 <- newImVec2 x' y'
-            p2 <- newImVec2 (x' + sz * 1.3) (y' + sz * 0.3)
-            p3 <- newImVec2 (x' + sz - sz * 1.3) (y' + sz - sz * 0.3)
-            p4 <- newImVec2 (x' + sz) (y' + sz)
-            imDrawList_AddBezierCubic draw_list p1 p2 p3 p4 col th curve_segments
-            traverse_ delete [p1, p2, p3, p4]
-          -- my new example
-          polyLine (x', y') =
-            let nElems = 4
-             in allocaArray nElems $ \(pp :: Ptr ImVec2) -> do
-                  p0 <- newImVec2 x' y'
-                  p1 <- newImVec2 (x' + sz * 1.3) (y' + sz * 0.3)
-                  p2 <- newImVec2 (x' + sz - sz * 1.3) (y' + sz - sz * 0.3)
-                  p3 <- newImVec2 (x' + sz) (y' + sz)
-                  pokeElemOff pp 0 p0
-                  pokeElemOff pp 1 p1
-                  pokeElemOff pp 2 p2
-                  pokeElemOff pp 3 p3
-                  let p :: ImVec2 = (cast_fptr_to_obj (castPtr pp))
-                  imDrawList_AddPolyline draw_list p (fromIntegral nElems) col 0 th
-                  traverse_ delete [p0, p1, p2, p3]
-          drawShapes =
-            [ -- N-gon
-              ngon,
-              -- Circle
-              circle,
-              -- Square
-              rect 0.0 (fromIntegral (fromEnum ImDrawFlags_None)),
-              -- Square with all rounded corners
-              rect rounding (fromIntegral (fromEnum ImDrawFlags_None)),
-              -- Square with two rounded corners
-              rect rounding (fromIntegral corners_tl_br),
-              -- Triangle
-              triangle,
-              -- Horizontal line (note: drawing a filled rectangle will be faster!)
-              horiz,
-              -- Vertical line (note: drawing a filled rectangle will be faster!)
-              vert,
-              -- Diagonal line
-              diag,
-              -- Quadratic Bezier Curve (3 control points)
-              quadBezier,
-              -- Cubic Bezier Curve (4 control points)
-              quadCubic,
-              -- a new example with polyline
-              polyLine
-            ]
-      let y' = y + n * (sz + spacing)
-      for_ (zip [0 ..] drawShapes) $ \(m, drawShape) -> do
-        let x' = x + m * (sz + spacing)
-        drawShape (x', y')
-
-    let ngonF (x', y') = do
-          v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
-          imDrawList_AddNgonFilled draw_list v (sz * 0.5) col ngon_sides
-          delete v
-        circleF (x', y') = do
-          v <- newImVec2 (x' + sz * 0.5) (y' + sz * 0.5)
-          imDrawList_AddCircleFilled draw_list v (sz * 0.5) col circle_segments
-          delete v
-        rectF rnd flag (x', y') = do
-          v1 <- newImVec2 x' y'
-          v2 <- newImVec2 (x' + sz) (y' + sz)
-          imDrawList_AddRectFilled draw_list v1 v2 col rnd flag
-          delete v1
-          delete v2
-        triangleF (x', y') = do
-          v1 <- newImVec2 (x' + sz * 0.5) y'
-          v2 <- newImVec2 (x' + sz) (y' + sz - 0.5)
-          v3 <- newImVec2 x' (y' + sz - 0.5)
-          imDrawList_AddTriangleFilled draw_list v1 v2 v3 col
-          delete v1
-          delete v2
-          delete v3
-        horizF (x', y') = do
-          v1 <- newImVec2 x' y'
-          v2 <- newImVec2 (x' + sz) (y' + thickness)
-          imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
-          delete v1
-          delete v2
-        vertF (x', y') = do
-          v1 <- newImVec2 x' y'
-          v2 <- newImVec2 (x' + thickness) (y' + sz)
-          imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
-          delete v1
-          delete v2
-        pixelF (x', y') = do
-          v1 <- newImVec2 x' y'
-          v2 <- newImVec2 (x' + 1) (y' + 1)
-          imDrawList_AddRectFilled draw_list v1 v2 col 0.0 0
-          delete v1
-          delete v2
-        multiColorF (x', y') = do
-          v1 <- newImVec2 x' y'
-          v2 <- newImVec2 (x' + sz) (y' + sz)
-          let withColor r g b a f = do
-                colf <- newImVec4 r g b a
-                col_ <- newImColor colf
-                col <- c_toImU32 col_
-                f col
-                delete col_
-                delete colf
-          withColor 0 0 0 1 $ \col1 ->
-            withColor 1 0 0 1 $ \col2 ->
-              withColor 1 1 0 1 $ \col3 ->
-                withColor 0 1 0 1 $ \col4 ->
-                  imDrawList_AddRectFilledMultiColor draw_list v1 v2 col1 col2 col3 col4
-          delete v1
-          delete v2
-
-        drawShapesFilled =
-          [ -- N-gon
-            ngonF,
-            -- Circle
-            circleF,
-            -- Square
-            rectF 0.0 (fromIntegral (fromEnum ImDrawFlags_None)),
-            -- Square with all rounded corners
-            rectF rounding (fromIntegral (fromEnum ImDrawFlags_None)),
-            -- Square with two rounded corners
-            rectF rounding (fromIntegral corners_tl_br),
-            -- Triangle
-            triangleF,
-            -- Horizontal line (faster than AddLine, but only handle integer thickness)
-            horizF,
-            -- Vertical line (faster than AddLine, but only handle integer thickness)
-            vertF,
-            -- Pixel (faster than AddLine)
-            pixelF,
-            -- gradient
-            multiColorF
-          ]
-    let y'' = y + 2 * (sz + spacing)
-    for_ (zip [0 ..] drawShapesFilled) $ \(m, drawShape) -> do
-      let x'' = x + m * (sz + spacing)
-      drawShape (x'', y'')
-
-    dummy_sz <- newImVec2 ((sz + spacing) * 11.2) ((sz + spacing) * 3.0)
-    dummy dummy_sz
-    textUnformatted ("dummy takes space like this" :: CString)
-
-    p' <- getCursorScreenPos
-    px' <- imVec2_x_get p'
-    py' <- imVec2_y_get p'
-    let x3 = px' + 4
-        y3 = py' + 4
-    v' <- newImVec2 x3 y3
-    imDrawList_AddText draw_list v' col ("This is drawn using AddText!" :: CString)
-
-    popItemWidth
+    showPrimitives colf
     endTabItem
   whenM (toBool <$> beginTabItem ("Canvas" :: CString)) $ do
+    textUnformatted ("testing mouse click" :: CString)
+    let left_button = fromIntegral (fromEnum ImGuiMouseButton_Left)
+    whenM (toBool <$> isMouseDown left_button) $
+      textUnformatted ("Left button is down" :: CString)
+    whenM (toBool <$> isMouseClicked_ left_button) $
+      textUnformatted ("Left button is clicked" :: CString)
     endTabItem
   whenM (toBool <$> beginTabItem ("BG/FG draw list" :: CString)) $ do
     endTabItem

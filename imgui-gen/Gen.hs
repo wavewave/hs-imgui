@@ -456,6 +456,19 @@ imGuiWindowFlags_ =
       enum_header = "imgui.h"
     }
 
+imGuiMouseButton_ :: EnumType
+imGuiMouseButton_ =
+  EnumType
+    { enum_name = "ImGuiMouseButton_",
+      enum_cases =
+        [ "ImGuiMouseButton_Left",
+          "ImGuiMouseButton_Right",
+          "ImGuiMouseButton_Middle",
+          "ImGuiMouseButton_COUNT"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imVec2 :: Class
 imVec2 =
   Class
@@ -513,7 +526,8 @@ enums =
     imGuiTableFlags_,
     imGuiTableColumnFlags_,
     imGuiTableRowFlags_,
-    imGuiWindowFlags_
+    imGuiWindowFlags_,
+    imGuiMouseButton_
   ]
 
 toplevelfunctions :: [TopLevel]
@@ -534,10 +548,30 @@ toplevelfunctions =
     -- draw data/list
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
+    --
     -- IO query
+    --
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction double_ "GetTime" [] Nothing),
+    -- - mouse
+    TLOrdinary (TopLevelFunction bool_ "IsMouseDown" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button", bool "repeat"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button"] (Just "isMouseClicked_")),
+    TLOrdinary (TopLevelFunction bool_ "IsMouseReleased" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsMouseDoubleClicked" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction int_ "GetMouseClickedCount" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsMouseHoveringRect" [cppclassref imVec2 "r_min", cppclassref imVec2 "r_max", bool "clip"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsMousePosValid" [cppclass imVec2 "mouse_pos"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsAnyMouseDown" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMousePos" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMousePosOnOpeningCurrentPopup" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsMouseDragging" [int "button", float "lock_threshold"] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMouseDragDelta" [int "button", float "lock_threshold"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "ResetMouseDragDelta" [int "button"] Nothing),
+    --
+    --
+    --
+    -- frame
     TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PushItemWidth" [float "item_width"] Nothing),
