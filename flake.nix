@@ -39,19 +39,27 @@
           // haskellOverlay pkgs hself hsuper));
 
       # TODO: use haskell.packages.(ghc).shellFor
-      mkShellFor = compiler: let
-        hsenv = (hpkgsFor compiler).ghcWithPackages (p: [
-          p.fficxx
-          p.fficxx-runtime
-          p.stdcxx
-          p.dotgen
-          p.optparse-applicative
-	  p.imgui
-	  p.implot
-        ]);
+      mkShellFor = isEnv: compiler: let
+        hsenv = (hpkgsFor compiler).ghcWithPackages (p:
+          [
+            p.fficxx
+            p.fficxx-runtime
+            p.stdcxx
+            p.dotgen
+            p.optparse-applicative
+          ]
+          ++ (
+            if isEnv
+            then [p.imgui p.implot]
+            else []
+          ));
         pyenv =
           pkgs.python3.withPackages
           (p: [p.sphinx p.sphinx_rtd_theme p.myst-parser]);
+        prompt =
+          if isEnv
+          then "hs-imgui-env"
+          else "hs-imgui-dev";
       in
         pkgs.mkShell {
           buildInputs =
@@ -66,11 +74,12 @@
               pkgs.graphviz
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isLinux
-	    [ pkgs.mesa
-	      pkgs.xorg.libX11
-	      pkgs.xorg.libXau
-	      pkgs.xorg.libXdmcp
-	    ]
+            [
+              pkgs.mesa
+              pkgs.xorg.libX11
+              pkgs.xorg.libXau
+              pkgs.xorg.libXdmcp
+            ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
             [
               pkgs.darwin.apple_sdk.frameworks.Cocoa
@@ -78,7 +87,7 @@
               pkgs.darwin.apple_sdk.frameworks.MetalKit
             ];
           shellHook = ''
-            export PS1="\n[hs-imgui:\w]$ \0"
+            export PS1="\n[${prompt}:\w]$ \0"
           '';
         };
 
@@ -94,9 +103,10 @@
       inherit haskellOverlay;
 
       devShells =
-        pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler)
+        pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor false compiler)
         // {
           default = devShells.${defaultCompiler};
+          env = mkShellFor true defaultCompiler;
         };
     });
 }
