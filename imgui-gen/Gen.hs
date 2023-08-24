@@ -325,6 +325,30 @@ imGuiConfigFlags_ =
       enum_header = "imgui.h"
     }
 
+imGuiHoveredFlags_ :: EnumType
+imGuiHoveredFlags_ =
+  EnumType
+    { enum_name = "ImGuiHoveredFlags_",
+      enum_cases =
+        [ "ImGuiHoveredFlags_None",
+          "ImGuiHoveredFlags_ChildWindows",
+          "ImGuiHoveredFlags_RootWindow",
+          "ImGuiHoveredFlags_AnyWindow",
+          "ImGuiHoveredFlags_NoPopupHierarchy",
+          "ImGuiHoveredFlags_AllowWhenBlockedByPopup",
+          "ImGuiHoveredFlags_AllowWhenBlockedByActiveItem",
+          "ImGuiHoveredFlags_AllowWhenOverlapped",
+          "ImGuiHoveredFlags_AllowWhenDisabled",
+          "ImGuiHoveredFlags_NoNavOverride",
+          "ImGuiHoveredFlags_RectOnly",
+          "ImGuiHoveredFlags_RootAndChildWindows",
+          "ImGuiHoveredFlags_DelayNormal",
+          "ImGuiHoveredFlags_DelayShort",
+          "ImGuiHoveredFlags_NoSharedDelay"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imGuiTableFlags_ :: EnumType
 imGuiTableFlags_ =
   EnumType
@@ -523,6 +547,7 @@ classes =
 enums =
   [ imDrawFlags_,
     imGuiConfigFlags_,
+    imGuiHoveredFlags_,
     imGuiTableFlags_,
     imGuiTableColumnFlags_,
     imGuiTableRowFlags_,
@@ -554,12 +579,28 @@ toplevelfunctions =
     -- draw data/list
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
-    --
-    -- IO query
-    --
+    -- general io
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction double_ "GetTime" [] Nothing),
-    -- - mouse
+    -- query on item
+    TLOrdinary (TopLevelFunction bool_ "IsItemHovered" [int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemActive" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemFocused" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemClicked" [int "mouse_button"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemVisible" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemEdited" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemActivated" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemDeactivated" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemDeactivatedAfterEdit" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsItemToggledOpen" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsAnyItemHovered" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsAnyItemActive" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsAnyItemFocused" [] Nothing),
+    TLOrdinary (TopLevelFunction uint_ "GetItemID" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectMin" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectMax" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectSize" [] Nothing),
+    -- query on mouse
     TLOrdinary (TopLevelFunction bool_ "IsMouseDown" [int "button"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button", bool "repeat"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button"] (Just "isMouseClicked_")),
