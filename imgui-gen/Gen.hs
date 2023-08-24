@@ -532,9 +532,18 @@ enums =
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
-  [ TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open", int "flags"] Nothing),
+  [ -- top-level window
+    TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
+    -- child window
+    TLOrdinary (TopLevelFunction bool_ "BeginChild" [cstring "str_id", cppclassref imVec2 "size", bool "border", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "EndChild" [] Nothing),
+    -- tab bar
     TLOrdinary (TopLevelFunction bool_ "BeginTabBar" [cstring "str_id"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "EndTabBar" [] Nothing),
+    -- tab item
     TLOrdinary (TopLevelFunction bool_ "BeginTabItem" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "EndTabItem" [] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
@@ -542,9 +551,6 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "EndTabBar" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "EndTabItem" [] Nothing),
     -- draw data/list
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
