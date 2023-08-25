@@ -593,7 +593,6 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
     -- draw data/list
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
     -- general io
     TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction double_ "GetTime" [] Nothing),
@@ -630,6 +629,16 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction bool_ "IsMouseDragging" [int "button", float "lock_threshold"] Nothing),
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMouseDragDelta" [int "button", float "lock_threshold"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ResetMouseDragDelta" [int "button"] Nothing),
+    -- windows utilities
+    TLOrdinary (TopLevelFunction bool_ "IsWindowAppearing" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsWindowCollapsed" [] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsWindowFocused" [int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsWindowHovered" [int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowPos" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowSize" [] Nothing),
+    TLOrdinary (TopLevelFunction float_ "GetWindowWidth" [] Nothing),
+    TLOrdinary (TopLevelFunction float_ "GetWindowHeight" [] Nothing),
     -- window manipulation
     TLOrdinary (TopLevelFunction void_ "SetNextWindowPos" [cppclassref imVec2 "pos", int "cond", cppclassref imVec2 "pivot"] Nothing),
     TLOrdinary (TopLevelFunction void_ "SetNextWindowSize" [cppclassref imVec2 "size", int "cond"] Nothing),
