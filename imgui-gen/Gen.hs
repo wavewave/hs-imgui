@@ -349,6 +349,37 @@ imGuiHoveredFlags_ =
       enum_header = "imgui.h"
     }
 
+imGuiInputTextFlags_ :: EnumType
+imGuiInputTextFlags_ =
+  EnumType
+    { enum_name = "ImGuiInputTextFlags_",
+      enum_cases =
+        [ "ImGuiInputTextFlags_None",
+          "ImGuiInputTextFlags_CharsDecimal",
+          "ImGuiInputTextFlags_CharsHexadecimal",
+          "ImGuiInputTextFlags_CharsUppercase",
+          "ImGuiInputTextFlags_CharsNoBlank",
+          "ImGuiInputTextFlags_AutoSelectAll",
+          "ImGuiInputTextFlags_EnterReturnsTrue",
+          "ImGuiInputTextFlags_CallbackCompletion",
+          "ImGuiInputTextFlags_CallbackHistory",
+          "ImGuiInputTextFlags_CallbackAlways",
+          "ImGuiInputTextFlags_CallbackCharFilter",
+          "ImGuiInputTextFlags_AllowTabInput",
+          "ImGuiInputTextFlags_CtrlEnterForNewLine",
+          "ImGuiInputTextFlags_NoHorizontalScroll",
+          "ImGuiInputTextFlags_AlwaysOverwrite",
+          "ImGuiInputTextFlags_ReadOnly",
+          "ImGuiInputTextFlags_Password",
+          "ImGuiInputTextFlags_NoUndoRedo",
+          "ImGuiInputTextFlags_CharsScientific",
+          "ImGuiInputTextFlags_CallbackResize",
+          "ImGuiInputTextFlags_CallbackEdit",
+          "ImGuiInputTextFlags_EscapeClearsAll"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imGuiTableFlags_ :: EnumType
 imGuiTableFlags_ =
   EnumType
@@ -562,6 +593,7 @@ enums =
   [ imDrawFlags_,
     imGuiConfigFlags_,
     imGuiHoveredFlags_,
+    imGuiInputTextFlags_,
     imGuiTableFlags_,
     imGuiTableColumnFlags_,
     imGuiTableRowFlags_,
@@ -572,7 +604,10 @@ enums =
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
-  [ -- top-level window
+  [ -- Context
+    TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
+    -- top-level window
     TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
     -- child window
@@ -584,13 +619,16 @@ toplevelfunctions =
     -- tab item
     TLOrdinary (TopLevelFunction bool_ "BeginTabItem" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction void_ "EndTabItem" [] Nothing),
+    -- Widgets: Button, Checkbox
     TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
+    -- Widgets: ColorEdit
     TLOrdinary (TopLevelFunction bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "ColorEdit4" [cstring "label", star CTFloat "col"] Nothing),
+    -- Widgets: Input with Keyboard
+    TLOrdinary (TopLevelFunction bool_ "InputText" [cstring "label", star CTChar "buf", uint "buf_size", int "flags"] Nothing),
+    --
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
     -- draw data/list
     TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     -- general io
