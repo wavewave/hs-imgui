@@ -480,6 +480,20 @@ imGuiWindowFlags_ =
       enum_header = "imgui.h"
     }
 
+imGuiCond_ :: EnumType
+imGuiCond_ =
+  EnumType
+    { enum_name = "ImGuiCond_",
+      enum_cases =
+        [ "ImGuiCond_None",
+          "ImGuiCond_Always",
+          "ImGuiCond_Once",
+          "ImGuiCond_FirstUseEver",
+          "ImGuiCond_Appearing"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imGuiMouseButton_ :: EnumType
 imGuiMouseButton_ =
   EnumType
@@ -552,6 +566,7 @@ enums =
     imGuiTableColumnFlags_,
     imGuiTableRowFlags_,
     imGuiWindowFlags_,
+    imGuiCond_,
     imGuiMouseButton_
   ]
 
@@ -616,6 +631,10 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMouseDragDelta" [int "button", float "lock_threshold"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ResetMouseDragDelta" [int "button"] Nothing),
     --
+    -- window manipulation
+    --
+    TLOrdinary (TopLevelFunction void_ "SetNextWindowPos" [cppclassref imVec2 "pos", int "cond", cppclassref imVec2 "pivot"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "SetNextWindowSize" [cppclassref imVec2 "size", int "cond"] Nothing),
     --
     --
     -- frame
