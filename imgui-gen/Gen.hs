@@ -630,13 +630,14 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction bool_ "IsMouseDragging" [int "button", float "lock_threshold"] Nothing),
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMouseDragDelta" [int "button", float "lock_threshold"] Nothing),
     TLOrdinary (TopLevelFunction void_ "ResetMouseDragDelta" [int "button"] Nothing),
-    --
     -- window manipulation
-    --
     TLOrdinary (TopLevelFunction void_ "SetNextWindowPos" [cppclassref imVec2 "pos", int "cond", cppclassref imVec2 "pivot"] Nothing),
     TLOrdinary (TopLevelFunction void_ "SetNextWindowSize" [cppclassref imVec2 "size", int "cond"] Nothing),
-    --
-    --
+    -- content region
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetContentRegionAvail" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetContentRegionMax" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowContentRegionMin" [] Nothing),
+    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowContentRegionMax" [] Nothing),
     -- frame
     TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
