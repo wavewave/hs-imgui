@@ -4,7 +4,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/master";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
-      url = "github:wavewave/fficxx/master";
+      url = "github:wavewave/fficxx/explicit-enum-cast";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
