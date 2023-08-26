@@ -582,6 +582,44 @@ imGuiMouseButton_ =
       enum_header = "imgui.h"
     }
 
+imGuiStyleVar_ :: EnumType
+imGuiStyleVar_ =
+  EnumType
+    { enum_name = "ImGuiStyleVar_",
+      enum_cases =
+        [ "ImGuiStyleVar_Alpha",
+          "ImGuiStyleVar_DisabledAlpha",
+          "ImGuiStyleVar_WindowPadding",
+          "ImGuiStyleVar_WindowRounding",
+          "ImGuiStyleVar_WindowBorderSize",
+          "ImGuiStyleVar_WindowMinSize",
+          "ImGuiStyleVar_WindowTitleAlign",
+          "ImGuiStyleVar_ChildRounding",
+          "ImGuiStyleVar_ChildBorderSize",
+          "ImGuiStyleVar_PopupRounding",
+          "ImGuiStyleVar_PopupBorderSize",
+          "ImGuiStyleVar_FramePadding",
+          "ImGuiStyleVar_FrameRounding",
+          "ImGuiStyleVar_FrameBorderSize",
+          "ImGuiStyleVar_ItemSpacing",
+          "ImGuiStyleVar_ItemInnerSpacing",
+          "ImGuiStyleVar_IndentSpacing",
+          "ImGuiStyleVar_CellPadding",
+          "ImGuiStyleVar_ScrollbarSize",
+          "ImGuiStyleVar_ScrollbarRounding",
+          "ImGuiStyleVar_GrabMinSize",
+          "ImGuiStyleVar_GrabRounding",
+          "ImGuiStyleVar_TabRounding",
+          "ImGuiStyleVar_ButtonTextAlign",
+          "ImGuiStyleVar_SelectableTextAlign",
+          "ImGuiStyleVar_SeparatorTextBorderSize",
+          "ImGuiStyleVar_SeparatorTextAlign",
+          "ImGuiStyleVar_SeparatorTextPadding",
+          "ImGuiStyleVar_COUNT"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imVec2 :: Class
 imVec2 =
   Class
@@ -644,7 +682,8 @@ enums =
     imGuiWindowFlags_,
     imGuiCond_,
     imGuiKey,
-    imGuiMouseButton_
+    imGuiMouseButton_,
+    imGuiStyleVar_
   ]
 
 toplevelfunctions :: [TopLevel]
@@ -757,8 +796,12 @@ toplevelfunctions =
     -- Font
     TLOrdinary (TopLevelFunction (cppclass_ imFont) "GetFont" [] Nothing),
     TLOrdinary (TopLevelFunction float_ "GetFontSize" [] Nothing),
+    -- Parameters stacks (shared)
     TLOrdinary (TopLevelFunction void_ "PushFont" [cppclass imFont "font"] Nothing),
     TLOrdinary (TopLevelFunction void_ "PopFont" [] Nothing),
+    TLOrdinary (TopLevelFunction void_ "PushStyleVar" [int "idx", float "val"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "PopStyleVar" [int "count"] Nothing),
+    TLOrdinary (TopLevelFunction void_ "PopStyleVar" [] (Just "PopStyleVar_")),
     -- ID
     TLOrdinary (TopLevelFunction void_ "PushID" [int "int_id"] Nothing),
     TLOrdinary (TopLevelFunction void_ "PopID" [] Nothing),
