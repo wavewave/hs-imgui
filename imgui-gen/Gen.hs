@@ -525,6 +525,50 @@ imGuiCond_ =
       enum_header = "imgui.h"
     }
 
+imGuiKey :: EnumType
+imGuiKey =
+  EnumType
+    { enum_name = "ImGuiKey",
+      enum_cases =
+        [ "ImGuiKey_None",
+          "ImGuiKey_Tab",
+          "ImGuiKey_LeftArrow",
+          "ImGuiKey_RightArrow",
+          "ImGuiKey_UpArrow",
+          "ImGuiKey_DownArrow",
+          "ImGuiKey_PageUp",
+          "ImGuiKey_PageDown",
+          "ImGuiKey_Home",
+          "ImGuiKey_End",
+          "ImGuiKey_Insert",
+          "ImGuiKey_Delete",
+          "ImGuiKey_Backspace",
+          "ImGuiKey_Space",
+          "ImGuiKey_Enter",
+          "ImGuiKey_Escape",
+          "ImGuiKey_LeftCtrl",
+          "ImGuiKey_LeftShift",
+          "ImGuiKey_LeftAlt",
+          "ImGuiKey_LeftSuper",
+          "ImGuiKey_RightCtrl",
+          "ImGuiKey_RightShift",
+          "ImGuiKey_RightAlt",
+          "ImGuiKey_RightSuper",
+          "ImGuiKey_Menu",
+          "ImGuiKey_0",
+          "ImGuiKey_1",
+          "ImGuiKey_2",
+          "ImGuiKey_3",
+          "ImGuiKey_4",
+          "ImGuiKey_5",
+          "ImGuiKey_6",
+          "ImGuiKey_7",
+          "ImGuiKey_8",
+          "ImGuiKey_9"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imGuiMouseButton_ :: EnumType
 imGuiMouseButton_ =
   EnumType
@@ -599,6 +643,7 @@ enums =
     imGuiTableRowFlags_,
     imGuiWindowFlags_,
     imGuiCond_,
+    imGuiKey,
     imGuiMouseButton_
   ]
 
@@ -652,7 +697,15 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectMin" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectMax" [] Nothing),
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectSize" [] Nothing),
-    -- query on mouse
+    -- Inputs Utilities: Keyboard/Mouse/Gamepad
+    -- keyboard
+    {- TLOrdinary (TopLevelFunction bool_ "IsKeyDown" [int "key"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsKeyPressed" [int "key", bool "repeat"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "IsKeyReleased" [int "key"] Nothing),
+    TLOrdinary (TopLevelFunction int_ "GetKeyPressedAmount" [int "key", float "repeat_delay", float "rate"] Nothing),
+    TLOrdinary (TopLevelFunction cstring_ "GetKeyName" [int "key"] Nothing), -}
+    TLOrdinary (TopLevelFunction void_ "SetNextFrameWantCaptureKeyboard" [bool "want_capture_keyboard"] Nothing),
+    -- mouse
     TLOrdinary (TopLevelFunction bool_ "IsMouseDown" [int "button"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button", bool "repeat"] Nothing),
     TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button"] (Just "isMouseClicked_")),
