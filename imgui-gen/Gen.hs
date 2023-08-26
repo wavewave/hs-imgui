@@ -711,6 +711,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction bool_ "ColorEdit4" [cstring "label", star CTFloat "col"] Nothing),
     -- Widgets: Input with Keyboard
     TLOrdinary (TopLevelFunction bool_ "InputText" [cstring "label", star CTChar "buf", uint "buf_size", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction bool_ "InputTextMultiline" [cstring "label", star CTChar "buf", uint "buf_size", cppclassref imVec2 "size", int "flags"] Nothing),
     --
     TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
     -- draw data/list
