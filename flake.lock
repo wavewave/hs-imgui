@@ -10,16 +10,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1693090485,
+        "lastModified": 1693093936,
         "narHash": "sha256-Ryo6qxtmkyz2E0RzBOmensJusk2DK0xR/mL27Mf5cTg=",
         "owner": "wavewave",
         "repo": "fficxx",
-        "rev": "f80282de81d8d8651beb96d932d7ba42df013549",
+        "rev": "801986625e644c46ee0c57883fe7931f02defcea",
         "type": "github"
       },
       "original": {
         "owner": "wavewave",
-        "ref": "explicit-enum-cast",
+        "ref": "master",
         "repo": "fficxx",
         "type": "github"
       }
