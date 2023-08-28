@@ -268,7 +268,9 @@ imGuiIO =
     [ Variable (int "ConfigFlags"),
       Variable (float "DeltaTime"),
       Variable (float "Framerate"),
-      Variable (cppclass imFontAtlas "Fonts")
+      Variable (cppclass imFontAtlas "Fonts"),
+      Variable (float "MouseWheel"),
+      Variable (float "MouseWheelH")
     ]
     []
     False
@@ -351,6 +353,39 @@ imGuiHoveredFlags_ =
           "ImGuiHoveredFlags_NoSharedDelay"
         ],
       enum_header = "imgui.h"
+    }
+
+imGuiInputFlags_ :: EnumType
+imGuiInputFlags_ =
+  EnumType
+    { enum_name = "ImGuiInputFlags_",
+      enum_cases =
+        [ "ImGuiInputFlags_None",
+          "ImGuiInputFlags_Repeat",
+          "ImGuiInputFlags_RepeatRateDefault",
+          "ImGuiInputFlags_RepeatRateNavMove",
+          "ImGuiInputFlags_RepeatRateNavTweak",
+          "ImGuiInputFlags_RepeatRateMask_",
+          "ImGuiInputFlags_CondHovered",
+          "ImGuiInputFlags_CondActive",
+          "ImGuiInputFlags_CondDefault_",
+          "ImGuiInputFlags_CondMask_",
+          "ImGuiInputFlags_LockThisFrame",
+          "ImGuiInputFlags_LockUntilRelease",
+          "ImGuiInputFlags_RouteFocused",
+          "ImGuiInputFlags_RouteGlobalLow",
+          "ImGuiInputFlags_RouteGlobal",
+          "ImGuiInputFlags_RouteGlobalHigh",
+          "ImGuiInputFlags_RouteMask_",
+          "ImGuiInputFlags_RouteAlways",
+          "ImGuiInputFlags_RouteUnlessBgFocused",
+          "ImGuiInputFlags_RouteExtraMask_",
+          "ImGuiInputFlags_SupportedByIsKeyPressed",
+          "ImGuiInputFlags_SupportedByShortcut",
+          "ImGuiInputFlags_SupportedBySetKeyOwner",
+          "ImGuiInputFlags_SupportedBySetItemKeyOwner"
+        ],
+      enum_header = "imgui_internal.h"
     }
 
 imGuiInputTextFlags_ :: EnumType
@@ -659,6 +694,17 @@ imGuiKey =
           "ImGuiKey_KeypadEnter",
           "ImGuiKey_KeypadEqual",
           --
+          "ImGuiKey_MouseLeft",
+          "ImGuiKey_MouseRight",
+          "ImGuiKey_MouseMiddle",
+          "ImGuiKey_MouseX1",
+          "ImGuiKey_MouseX2",
+          "ImGuiKey_MouseWheelX",
+          "ImGuiKey_MouseWheelY",
+          "ImGuiKey_ReservedForModCtrl",
+          "ImGuiKey_ReservedForModShift",
+          "ImGuiKey_ReservedForModAlt",
+          "ImGuiKey_ReservedForModSuper",
           "ImGuiKey_COUNT",
           --
           "ImGuiMod_None",
@@ -787,7 +833,9 @@ enums =
     imGuiCond_,
     imGuiKey,
     imGuiMouseButton_,
-    imGuiStyleVar_
+    imGuiStyleVar_,
+    -- internal
+    imGuiInputFlags_
   ]
 
 toplevelfunctions :: [TopLevel]
@@ -921,7 +969,16 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label", int "flags", float "init_width_or_weight"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label"] (Just "tableSetupColumn_")),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetColumnIndex" [int "column_n"] Nothing),
+    --
+    -- internal (experimental)
+    --
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "GetKeyOwner" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetKeyOwner" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", uint "owner_id", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetItemKeyOwner" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TestKeyOwner" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", uint "owner_id"] Nothing),
+    --
     -- backend
+    --
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ImGui_ImplGlfw_InitForOpenGL" [cppclass gLFWwindow "window", bool "install_callbacks"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplGlfw_NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplGlfw_Shutdown" [] Nothing),
@@ -929,7 +986,9 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplOpenGL3_NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplOpenGL3_RenderDrawData" [cppclass imDrawData "draw_data"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing),
+    --
     -- GLFW functions
+    --
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ gLFWwindow) "glfwCreateWindow" [int "width", int "height", cstring "title", cppclass gLFWmonitor "monitor", cppclass gLFWwindow "share"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwDestroyWindow" [cppclass gLFWwindow "window"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height"] Nothing),
@@ -941,7 +1000,9 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwTerminate" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwWindowHint" [int "hint", int "value"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe int_ "glfwWindowShouldClose" [cppclass gLFWwindow "window"] Nothing),
+    --
     -- GL functions
+    --
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glClear" [int "mask"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)
@@ -956,6 +1017,7 @@ headers =
           muimports_headers =
             [ "GLFW/glfw3.h",
               "imgui.h",
+              "imgui_internal.h",
               "imgui_impl_glfw.h",
               "imgui_impl_opengl3.h"
             ]
