@@ -273,10 +273,10 @@ showExampleAppCustomRendering :: ImVec4 -> IO ()
 showExampleAppCustomRendering colf = do
   begin ("Custom rendering" :: CString) nullPtr 0
   beginTabBar ("##TabBar" :: CString)
-  whenM (toBool <$> beginTabItem ("Primitives" :: CString)) $ do
+  whenM (toBool <$> beginTabItem_ ("Primitives" :: CString)) $ do
     showPrimitives colf
     endTabItem
-  whenM (toBool <$> beginTabItem ("Canvas" :: CString)) $ do
+  whenM (toBool <$> beginTabItem_ ("Canvas" :: CString)) $ do
     textUnformatted ("testing mouse click" :: CString)
     let left_button = fromIntegral (fromEnum ImGuiMouseButton_Left)
     whenM (toBool <$> isMouseDown left_button) $
@@ -284,7 +284,7 @@ showExampleAppCustomRendering colf = do
     whenM (toBool <$> isMouseClicked_ left_button) $
       textUnformatted ("Left button is clicked" :: CString)
     endTabItem
-  whenM (toBool <$> beginTabItem ("BG/FG draw list" :: CString)) $ do
+  whenM (toBool <$> beginTabItem_ ("BG/FG draw list" :: CString)) $ do
     endTabItem
   endTabBar
   end

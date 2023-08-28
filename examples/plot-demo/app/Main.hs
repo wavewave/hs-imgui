@@ -217,13 +217,13 @@ main = do
               showFramerate io
               begin ("demo plot" :: CString) nullPtr 0
               beginTabBar ("##Tab" :: CString)
-              whenM (toBool <$> beginTabItem ("Line plots" :: CString)) $ do
+              whenM (toBool <$> beginTabItem_ ("Line plots" :: CString)) $ do
                 demoLinePlots (px1, py1) (px2, py2)
                 endTabItem
-              whenM (toBool <$> beginTabItem ("Table of plots" :: CString)) $ do
+              whenM (toBool <$> beginTabItem_ ("Table of plots" :: CString)) $ do
                 demoTables ref_offset pdat
                 endTabItem
-              whenM (toBool <$> beginTabItem ("Real-time" :: CString)) $ do
+              whenM (toBool <$> beginTabItem_ ("Real-time" :: CString)) $ do
                 v <- getMousePos
                 x <- realToFrac @_ @Double <$> imVec2_x_get v
                 y <- realToFrac @_ @Double <$> imVec2_y_get v

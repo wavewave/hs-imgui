@@ -384,6 +384,24 @@ imGuiInputTextFlags_ =
       enum_header = "imgui.h"
     }
 
+imGuiTabItemFlags_ :: EnumType
+imGuiTabItemFlags_ =
+  EnumType
+    { enum_name = "ImGuiTabItemFlags_",
+      enum_cases =
+        [ "ImGuiTabItemFlags_None",
+          "ImGuiTabItemFlags_UnsavedDocument",
+          "ImGuiTabItemFlags_SetSelected",
+          "ImGuiTabItemFlags_NoCloseWithMiddleMouseButton",
+          "ImGuiTabItemFlags_NoPushId",
+          "ImGuiTabItemFlags_NoTooltip",
+          "ImGuiTabItemFlags_NoReorder",
+          "ImGuiTabItemFlags_Leading",
+          "ImGuiTabItemFlags_Trailing"
+        ],
+      enum_header = "imgui.h"
+    }
+
 imGuiTableFlags_ :: EnumType
 imGuiTableFlags_ =
   EnumType
@@ -761,6 +779,7 @@ enums =
     imGuiConfigFlags_,
     imGuiHoveredFlags_,
     imGuiInputTextFlags_,
+    imGuiTabItemFlags_,
     imGuiTableFlags_,
     imGuiTableColumnFlags_,
     imGuiTableRowFlags_,
@@ -782,12 +801,14 @@ toplevelfunctions =
     -- child window
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginChild" [cstring "str_id", cppclassref imVec2 "size", bool "border", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndChild" [] Nothing),
-    -- tab bar
+    -- Tab bars, Tab
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTabBar" [cstring "str_id"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTabBar" [] Nothing),
-    -- tab item
-    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTabItem" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTabItem" [cstring "label", star CTBool "p_open", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTabItem" [cstring "label"] (Just "beginTabItem_")),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTabItem" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TabItemButton" [cstring "label", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetTabItemClosed" [cstring "tab_or_docked_window_label"] Nothing),
     -- Widgets: Button, Checkbox
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Button" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
