@@ -281,7 +281,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPlot" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags"] Nothing),
     -- style
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushStyleVar" [int "idx", cppclassref imVec2 "val"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushStyleVar" [int "idx", cppclassref imVec2 "val"] (Just "PushStyleVar1")),
     TLTemplate
       ( TopLevelTemplateFunction
           { topleveltfunc_safety = FFIUnsafe,
