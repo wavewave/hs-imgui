@@ -62,6 +62,7 @@ import FFICXX.Generate.Type.Config
   )
 import FFICXX.Generate.Type.Module (TemplateClassImportHeader (..))
 import FFICXX.Generate.Util.DepGraph (drawDepGraph)
+import FFICXX.Runtime.Types (FFISafety (..))
 import qualified Options.Applicative as OA
 import System.Directory (getCurrentDirectory)
 import System.Environment (getArgs)
@@ -273,17 +274,18 @@ enums =
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
   -- for now
-  [ TLOrdinary (TopLevelFunction void_ "CreateContext" [] (Just "createImPlotContext")),
-    TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showImPlotDemoWindow")),
-    TLOrdinary (TopLevelFunction bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "BeginPlot" [cstring "title_id"] (Just "beginPlot_")),
-    TLOrdinary (TopLevelFunction void_ "EndPlot" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags"] Nothing),
+  [ TLOrdinary (TopLevelFunction FFIUnsafe void_ "CreateContext" [] (Just "createImPlotContext")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showImPlotDemoWindow")),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id"] (Just "beginPlot_")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPlot" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags"] Nothing),
     -- style
-    TLOrdinary (TopLevelFunction void_ "PushStyleVar" [int "idx", cppclassref imVec2 "val"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushStyleVar" [int "idx", cppclassref imVec2 "val"] Nothing),
     TLTemplate
       ( TopLevelTemplateFunction
-          { topleveltfunc_params = ["t1"],
+          { topleveltfunc_safety = FFIUnsafe,
+            topleveltfunc_params = ["t1"],
             topleveltfunc_ret = void_,
             topleveltfunc_name = "plotLine",
             topleveltfunc_oname = "ImPlot::PlotLine",
@@ -297,7 +299,8 @@ toplevelfunctions =
       ),
     TLTemplate
       ( TopLevelTemplateFunction
-          { topleveltfunc_params = ["t1"],
+          { topleveltfunc_safety = FFIUnsafe,
+            topleveltfunc_params = ["t1"],
             topleveltfunc_ret = void_,
             topleveltfunc_name = "plotLine1",
             topleveltfunc_oname = "ImPlot::PlotLine",

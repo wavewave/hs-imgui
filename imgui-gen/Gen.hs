@@ -63,6 +63,7 @@ import FFICXX.Generate.Type.Config
   )
 import FFICXX.Generate.Type.Module (TemplateClassImportHeader (..))
 import FFICXX.Generate.Util.DepGraph (drawDepGraph)
+import FFICXX.Runtime.Types (FFISafety (..))
 import qualified Options.Applicative as OA
 import System.Directory (getCurrentDirectory)
 import System.Environment (getArgs)
@@ -177,7 +178,7 @@ imDrawData =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual void_ "Clear" [] Nothing
+      NonVirtual FFIUnsafe void_ "Clear" [] Nothing
     ]
     []
     []
@@ -191,21 +192,21 @@ imDrawList =
     [deletable]
     mempty
     Nothing
-    [ NonVirtual void_ "AddLine" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", uint "col", float "thickness"] Nothing,
-      NonVirtual void_ "AddRect" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col", float "rounding", int "flags", float "thickness"] Nothing,
-      NonVirtual void_ "AddRectFilled" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col", float "rounding", int "flags"] Nothing,
-      NonVirtual void_ "AddRectFilledMultiColor" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col_upr_left", uint "col_upr_right", uint "col_bot_right", uint "col_bot_left"] Nothing,
-      NonVirtual void_ "AddTriangle" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col", float "thickness"] Nothing,
-      NonVirtual void_ "AddTriangleFilled" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col"] Nothing,
-      NonVirtual void_ "AddCircle" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing,
-      NonVirtual void_ "AddCircleFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,
-      NonVirtual void_ "AddNgon" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing,
-      NonVirtual void_ "AddNgonFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,
-      NonVirtual void_ "AddText" [cppclassref imVec2 "pos", uint "col", cstring "text_begin"] Nothing,
+    [ NonVirtual FFIUnsafe void_ "AddLine" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", uint "col", float "thickness"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddRect" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col", float "rounding", int "flags", float "thickness"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddRectFilled" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col", float "rounding", int "flags"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddRectFilledMultiColor" [cppclassref imVec2 "p_min", cppclassref imVec2 "p_max", uint "col_upr_left", uint "col_upr_right", uint "col_bot_right", uint "col_bot_left"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddTriangle" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col", float "thickness"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddTriangleFilled" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddCircle" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddCircleFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddNgon" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments", float "thickness"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddNgonFilled" [cppclassref imVec2 "center", float "radius", uint "col", int "num_segments"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddText" [cppclassref imVec2 "pos", uint "col", cstring "text_begin"] Nothing,
       -- first arg is ImVec2* points
-      NonVirtual void_ "AddPolyline" [cppclass imVec2 "points", int "num_points", uint "col", int "flags", float "thinkness"] Nothing,
-      NonVirtual void_ "AddBezierCubic" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", cppclassref imVec2 "p4", uint "col", float "thickness", int "num_segments"] Nothing,
-      NonVirtual void_ "AddBezierQuadratic" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col", float "thickness", int "num_segments"] Nothing
+      NonVirtual FFIUnsafe void_ "AddPolyline" [cppclass imVec2 "points", int "num_points", uint "col", int "flags", float "thinkness"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddBezierCubic" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", cppclassref imVec2 "p4", uint "col", float "thickness", int "num_segments"] Nothing,
+      NonVirtual FFIUnsafe void_ "AddBezierQuadratic" [cppclassref imVec2 "p1", cppclassref imVec2 "p2", cppclassref imVec2 "p3", uint "col", float "thickness", int "num_segments"] Nothing
     ]
     []
     []
@@ -235,8 +236,8 @@ imFontAtlas =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual (cppclass_ imFont) "AddFontDefault" [] Nothing,
-      NonVirtual (cppclass_ imFont) "AddFontFromFileTTF" [cstring "filename", float "size_pixels"] Nothing
+      NonVirtual FFIUnsafe (cppclass_ imFont) "AddFontDefault" [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ imFont) "AddFontFromFileTTF" [cstring "filename", float "size_pixels"] Nothing
     ]
     []
     []
@@ -281,7 +282,7 @@ imGuiTextBuffer =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual void_ "clear" [] Nothing
+      NonVirtual FFIUnsafe void_ "clear" [] Nothing
     ]
     []
     []
@@ -773,156 +774,156 @@ enums =
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
   [ -- Context
-    TLOrdinary (TopLevelFunction (cppclass_ imGuiContext) "CreateContext" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imGuiContext) "CreateContext" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "DestroyContext" [cppclass imGuiContext "ctx"] Nothing),
     -- top-level window
-    TLOrdinary (TopLevelFunction bool_ "Begin" [cstring "name", star CTBool "p_open", int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "End" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Begin" [cstring "name", star CTBool "p_open", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "End" [] Nothing),
     -- child window
-    TLOrdinary (TopLevelFunction bool_ "BeginChild" [cstring "str_id", cppclassref imVec2 "size", bool "border", int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "EndChild" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginChild" [cstring "str_id", cppclassref imVec2 "size", bool "border", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndChild" [] Nothing),
     -- tab bar
-    TLOrdinary (TopLevelFunction bool_ "BeginTabBar" [cstring "str_id"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "EndTabBar" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTabBar" [cstring "str_id"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTabBar" [] Nothing),
     -- tab item
-    TLOrdinary (TopLevelFunction bool_ "BeginTabItem" [cstring "label"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "EndTabItem" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTabItem" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTabItem" [] Nothing),
     -- Widgets: Button, Checkbox
-    TLOrdinary (TopLevelFunction bool_ "Button" [cstring "label"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Button" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
     -- Widgets: ColorEdit
-    TLOrdinary (TopLevelFunction bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "ColorEdit4" [cstring "label", star CTFloat "col"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ColorEdit4" [cstring "label", star CTFloat "col"] Nothing),
     -- Widgets: Input with Keyboard
-    TLOrdinary (TopLevelFunction bool_ "InputText" [cstring "label", star CTChar "buf", uint "buf_size", int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "InputTextMultiline" [cstring "label", star CTChar "buf", uint "buf_size", cppclassref imVec2 "size", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InputText" [cstring "label", star CTChar "buf", uint "buf_size", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InputTextMultiline" [cstring "label", star CTChar "buf", uint "buf_size", cppclassref imVec2 "size", int "flags"] Nothing),
     --
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
     -- draw data/list
-    TLOrdinary (TopLevelFunction (cppclass_ imDrawData) "GetDrawData" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     -- general io
-    TLOrdinary (TopLevelFunction (cppclassref_ imGuiIO) "GetIO" [] Nothing),
-    TLOrdinary (TopLevelFunction double_ "GetTime" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclassref_ imGuiIO) "GetIO" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe double_ "GetTime" [] Nothing),
     -- query on item
-    TLOrdinary (TopLevelFunction bool_ "IsItemHovered" [int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemActive" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemFocused" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemClicked" [int "mouse_button"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemVisible" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemEdited" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemActivated" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemDeactivated" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemDeactivatedAfterEdit" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsItemToggledOpen" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsAnyItemHovered" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsAnyItemActive" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsAnyItemFocused" [] Nothing),
-    TLOrdinary (TopLevelFunction uint_ "GetItemID" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectMin" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectMax" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetItemRectSize" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemHovered" [int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemActive" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemFocused" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemClicked" [int "mouse_button"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemVisible" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemEdited" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemActivated" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemDeactivated" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemDeactivatedAfterEdit" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemToggledOpen" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsAnyItemHovered" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsAnyItemActive" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsAnyItemFocused" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe uint_ "GetItemID" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetItemRectMin" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetItemRectMax" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetItemRectSize" [] Nothing),
     -- Inputs Utilities: Keyboard/Mouse/Gamepad
     -- keyboard
-    TLOrdinary (TopLevelFunction bool_ "IsKeyDown" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsKeyPressed" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", bool "repeat"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsKeyReleased" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
-    TLOrdinary (TopLevelFunction int_ "GetKeyPressedAmount" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", float "repeat_delay", float "rate"] Nothing),
-    TLOrdinary (TopLevelFunction cstring_ "GetKeyName" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "SetNextFrameWantCaptureKeyboard" [bool "want_capture_keyboard"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsKeyDown" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsKeyPressed" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", bool "repeat"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsKeyReleased" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe int_ "GetKeyPressedAmount" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", float "repeat_delay", float "rate"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe cstring_ "GetKeyName" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetNextFrameWantCaptureKeyboard" [bool "want_capture_keyboard"] Nothing),
     -- mouse
-    TLOrdinary (TopLevelFunction bool_ "IsMouseDown" [int "button"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button", bool "repeat"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsMouseClicked" [int "button"] (Just "isMouseClicked_")),
-    TLOrdinary (TopLevelFunction bool_ "IsMouseReleased" [int "button"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsMouseDoubleClicked" [int "button"] Nothing),
-    TLOrdinary (TopLevelFunction int_ "GetMouseClickedCount" [int "button"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsMouseHoveringRect" [cppclassref imVec2 "r_min", cppclassref imVec2 "r_max", bool "clip"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsMousePosValid" [cppclass imVec2 "mouse_pos"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsAnyMouseDown" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMousePos" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMousePosOnOpeningCurrentPopup" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsMouseDragging" [int "button", float "lock_threshold"] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetMouseDragDelta" [int "button", float "lock_threshold"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ResetMouseDragDelta" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMouseDown" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMouseClicked" [int "button", bool "repeat"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMouseClicked" [int "button"] (Just "isMouseClicked_")),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMouseReleased" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMouseDoubleClicked" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe int_ "GetMouseClickedCount" [int "button"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMouseHoveringRect" [cppclassref imVec2 "r_min", cppclassref imVec2 "r_max", bool "clip"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMousePosValid" [cppclass imVec2 "mouse_pos"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsAnyMouseDown" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetMousePos" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetMousePosOnOpeningCurrentPopup" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsMouseDragging" [int "button", float "lock_threshold"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetMouseDragDelta" [int "button", float "lock_threshold"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ResetMouseDragDelta" [int "button"] Nothing),
     -- windows utilities
-    TLOrdinary (TopLevelFunction bool_ "IsWindowAppearing" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsWindowCollapsed" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsWindowFocused" [int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "IsWindowHovered" [int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowPos" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowSize" [] Nothing),
-    TLOrdinary (TopLevelFunction float_ "GetWindowWidth" [] Nothing),
-    TLOrdinary (TopLevelFunction float_ "GetWindowHeight" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsWindowAppearing" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsWindowCollapsed" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsWindowFocused" [int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsWindowHovered" [int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imDrawList) "GetWindowDrawList" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetWindowPos" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetWindowSize" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetWindowWidth" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetWindowHeight" [] Nothing),
     -- window manipulation
-    TLOrdinary (TopLevelFunction void_ "SetNextWindowPos" [cppclassref imVec2 "pos", int "cond", cppclassref imVec2 "pivot"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "SetNextWindowSize" [cppclassref imVec2 "size", int "cond"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetNextWindowPos" [cppclassref imVec2 "pos", int "cond", cppclassref imVec2 "pivot"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetNextWindowSize" [cppclassref imVec2 "size", int "cond"] Nothing),
     -- content region
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetContentRegionAvail" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetContentRegionMax" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowContentRegionMin" [] Nothing),
-    TLOrdinary (TopLevelFunction (cppclasscopy_ imVec2) "GetWindowContentRegionMax" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetContentRegionAvail" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetContentRegionMax" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetWindowContentRegionMin" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetWindowContentRegionMax" [] Nothing),
     -- frame
-    TLOrdinary (TopLevelFunction void_ "NewFrame" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "PopItemWidth" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "PushItemWidth" [float "item_width"] Nothing),
-    TLOrdinary (TopLevelFunction float_ "CalcItemWidth" [] Nothing),
-    TLOrdinary (TopLevelFunction float_ "GetFrameHeight" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "Render" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "SameLine" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "Dummy" [cppclassref imVec2 "size"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "SliderFloat" [cstring "label", star CTFloat "v", float "v_min", float "v_max"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "TextUnformatted" [cstring "text"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "NewFrame" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopItemWidth" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushItemWidth" [float "item_width"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "CalcItemWidth" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetFrameHeight" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Render" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SameLine" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Dummy" [cppclassref imVec2 "size"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "SliderFloat" [cstring "label", star CTFloat "v", float "v_min", float "v_max"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TextUnformatted" [cstring "text"] Nothing),
     -- Color
-    TLOrdinary (TopLevelFunction void_ "StyleColorsDark" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "StyleColorsLight" [] Nothing),
-    TLOrdinary (TopLevelFunction uint_ "ColorConvertFloat4ToU32" [cppclassref imVec4 "in"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "StyleColorsDark" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "StyleColorsLight" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe uint_ "ColorConvertFloat4ToU32" [cppclassref imVec4 "in"] Nothing),
     -- Font
-    TLOrdinary (TopLevelFunction (cppclass_ imFont) "GetFont" [] Nothing),
-    TLOrdinary (TopLevelFunction float_ "GetFontSize" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imFont) "GetFont" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetFontSize" [] Nothing),
     -- Parameters stacks (shared)
-    TLOrdinary (TopLevelFunction void_ "PushFont" [cppclass imFont "font"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "PopFont" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "PushStyleVar" [int "idx", float "val"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "PopStyleVar" [int "count"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "PopStyleVar" [] (Just "PopStyleVar_")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushFont" [cppclass imFont "font"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopFont" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushStyleVar" [int "idx", float "val"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopStyleVar" [int "count"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopStyleVar" [] (Just "PopStyleVar_")),
     -- ID
-    TLOrdinary (TopLevelFunction void_ "PushID" [int "int_id"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "PopID" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushID" [int "int_id"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopID" [] Nothing),
     -- table
-    TLOrdinary (TopLevelFunction bool_ "BeginTable" [cstring "str_id", int "column", int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "EndTable" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "TableHeadersRow" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "TableNextRow" [int "row_flags"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "TableNextColumn" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "TableSetupColumn" [cstring "label", int "flags", float "init_width_or_weight"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "TableSetupColumn" [cstring "label"] (Just "tableSetupColumn_")),
-    TLOrdinary (TopLevelFunction void_ "TableSetColumnIndex" [int "column_n"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTable" [cstring "str_id", int "column", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTable" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableHeadersRow" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableNextRow" [int "row_flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableNextColumn" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label", int "flags", float "init_width_or_weight"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label"] (Just "tableSetupColumn_")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetColumnIndex" [int "column_n"] Nothing),
     -- backend
-    TLOrdinary (TopLevelFunction bool_ "ImGui_ImplGlfw_InitForOpenGL" [cppclass gLFWwindow "window", bool "install_callbacks"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_NewFrame" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ImGui_ImplGlfw_Shutdown" [] Nothing),
-    TLOrdinary (TopLevelFunction bool_ "ImGui_ImplOpenGL3_Init" [cstring "glsl_version"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_NewFrame" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_RenderDrawData" [cppclass imDrawData "draw_data"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ImGui_ImplGlfw_InitForOpenGL" [cppclass gLFWwindow "window", bool "install_callbacks"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplGlfw_NewFrame" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplGlfw_Shutdown" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ImGui_ImplOpenGL3_Init" [cstring "glsl_version"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplOpenGL3_NewFrame" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplOpenGL3_RenderDrawData" [cppclass imDrawData "draw_data"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ImGui_ImplOpenGL3_Shutdown" [] Nothing),
     -- GLFW functions
-    TLOrdinary (TopLevelFunction (cppclass_ gLFWwindow) "glfwCreateWindow" [int "width", int "height", cstring "title", cppclass gLFWmonitor "monitor", cppclass gLFWwindow "share"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwDestroyWindow" [cppclass gLFWwindow "window"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwInit" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwMakeContextCurrent" [cppclass gLFWwindow "window"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwPollEvents" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwSwapBuffers" [cppclass gLFWwindow "window"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwSwapInterval" [int "interval"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwTerminate" [] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glfwWindowHint" [int "hint", int "value"] Nothing),
-    TLOrdinary (TopLevelFunction int_ "glfwWindowShouldClose" [cppclass gLFWwindow "window"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ gLFWwindow) "glfwCreateWindow" [int "width", int "height", cstring "title", cppclass gLFWmonitor "monitor", cppclass gLFWwindow "share"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwDestroyWindow" [cppclass gLFWwindow "window"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwInit" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwMakeContextCurrent" [cppclass gLFWwindow "window"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwPollEvents" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwSwapBuffers" [cppclass gLFWwindow "window"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwSwapInterval" [int "interval"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwTerminate" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwWindowHint" [int "hint", int "value"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe int_ "glfwWindowShouldClose" [cppclass gLFWwindow "window"] Nothing),
     -- GL functions
-    TLOrdinary (TopLevelFunction void_ "glClear" [int "mask"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
-    TLOrdinary (TopLevelFunction void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glClear" [int "mask"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glClearColor" [float "red", float "green", float "blue", float "alpha"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glViewport" [int "x", int "y", int "width", int "height"] Nothing)
   ]
 
 templates = []
