@@ -222,7 +222,11 @@ imFont =
     Nothing
     [ Constructor [] Nothing
     ]
-    [ Variable (float "Scale")
+    [ Variable (float "FontSize"),
+      Variable (float "Scale"),
+      Variable (float "Ascent"),
+      Variable (float "Descent"),
+      Variable (int "MetricsTotalSurface")
     ]
     []
     False
