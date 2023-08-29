@@ -877,7 +877,10 @@ toplevelfunctions =
     -- general io
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclassref_ imGuiIO) "GetIO" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe double_ "GetTime" [] Nothing),
-    -- query on item
+    -- Clipping
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushClipRect" [cppclassref imVec2 "clip_rect_min", cppclassref imVec2 "clip_rect_max", bool "intersect_with_current_clip_rect"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopClipRect" [] Nothing),
+    -- Item/Widgets Utilities and Query Functions
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemHovered" [int "flags"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemActive" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsItemFocused" [] Nothing),
