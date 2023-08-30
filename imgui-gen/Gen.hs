@@ -294,6 +294,19 @@ imGuiTextBuffer =
     []
     False
 
+imGuiViewport :: Class
+imGuiViewport =
+  Class
+    cabal
+    "ImGuiViewport"
+    []
+    mempty
+    Nothing
+    []
+    []
+    []
+    False
+
 imDrawFlags_ :: EnumType
 imDrawFlags_ =
   EnumType
@@ -331,6 +344,21 @@ imGuiConfigFlags_ =
           "ImGuiConfigFlags_NoMouseCursorChange",
           "ImGuiConfigFlags_IsSRGB",
           "ImGuiConfigFlags_IsTouchScreen"
+        ],
+      enum_header = "imgui.h"
+    }
+
+imGuiDir_ :: EnumType
+imGuiDir_ =
+  EnumType
+    { enum_name = "ImGuiDir_",
+      enum_cases =
+        [ "ImGuiDir_None",
+          "ImGuiDir_Left",
+          "ImGuiDir_Right",
+          "ImGuiDir_Up",
+          "ImGuiDir_Down",
+          "ImGuiDir_COUNT"
         ],
       enum_header = "imgui.h"
     }
@@ -820,6 +848,7 @@ classes =
     imGuiContext,
     imGuiIO,
     imGuiTextBuffer,
+    imGuiViewport,
     imVec2,
     imVec4
   ]
@@ -827,6 +856,7 @@ classes =
 enums =
   [ imDrawFlags_,
     imGuiConfigFlags_,
+    imGuiDir_,
     imGuiHoveredFlags_,
     imGuiInputTextFlags_,
     imGuiTabItemFlags_,
@@ -872,6 +902,8 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InputTextMultiline" [cstring "label", star CTChar "buf", uint "buf_size", cppclassref imVec2 "size", int "flags"] Nothing),
     --
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
+    -- Viewports
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imGuiViewport) "GetMainViewport" [] Nothing),
     -- draw data/list
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imDrawData) "GetDrawData" [] Nothing),
     -- general io
@@ -979,6 +1011,9 @@ toplevelfunctions =
     --
     -- internal (experimental)
     --
+    -- Menus
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginViewportSideBar" [cstring "name", cppclass imGuiViewport "viewport", int "dir", float "size", int "window_flags"] Nothing),
+    -- Key/Input Ownership
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "GetKeyOwner" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetKeyOwner" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", uint "owner_id", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetItemKeyOwner" [Arg (CPT (CPTEnum imGuiKey) NoConst) "key", int "flags"] Nothing),
@@ -1039,6 +1074,7 @@ headers =
     modImports "ImGuiContext" [] ["imgui.h"],
     modImports "ImGuiIO" [] ["imgui.h"],
     modImports "ImGuiTextBuffer" [] ["imgui.h"],
+    modImports "ImGuiViewport" [] ["imgui.h"],
     modImports "ImVec2" [] ["imgui.h"],
     modImports "ImVec4" [] ["imgui.h"]
   ]
