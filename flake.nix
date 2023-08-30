@@ -14,20 +14,20 @@
     nixpkgs,
     flake-utils,
     fficxx,
-  }:
+  }: let
+    overlay = self: super: {
+      imgui = self.callPackage ./nix/imgui/default.nix {
+        frameworks = self.darwin.apple_sdk.frameworks;
+      };
+      implot = self.callPackage ./nix/implot/default.nix {
+        frameworks = self.darwin.apple_sdk.frameworks;
+      };
+    };
+  in
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
-        config = {
-          packageOverrides = self: {
-            imgui = self.callPackage ./nix/imgui/default.nix {
-              frameworks = self.darwin.apple_sdk.frameworks;
-            };
-            implot = self.callPackage ./nix/implot/default.nix {
-              frameworks = self.darwin.apple_sdk.frameworks;
-            };
-          };
-        };
+        overlays = [overlay];
       };
 
       haskellOverlay = final: hself: hsuper:
@@ -95,13 +95,14 @@
       supportedCompilers = ["ghc962"];
       defaultCompiler = "ghc962";
     in rec {
+      inherit overlay;
+      inherit haskellOverlay;
+
       packages =
         pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler)
         // {
           inherit (pkgs) imgui implot;
         };
-
-      inherit haskellOverlay;
 
       devShells =
         pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor false compiler)
