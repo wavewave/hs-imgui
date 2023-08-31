@@ -891,9 +891,11 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTabItem" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TabItemButton" [cstring "label", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetTabItemClosed" [cstring "tab_or_docked_window_label"] Nothing),
-    -- Widgets: Button, Checkbox
+    -- Widgets: Main
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Button" [cstring "label"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "RadioButton" [cstring "label", bool "active"] (Just "radioButton_")),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "RadioButton" [cstring "label", star CTInt "v", int "v_button"] Nothing),
     -- Widgets: ColorEdit
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ColorEdit4" [cstring "label", star CTFloat "col"] Nothing),
