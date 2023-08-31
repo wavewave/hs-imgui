@@ -969,6 +969,17 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetContentRegionMax" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetWindowContentRegionMin" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetWindowContentRegionMax" [] Nothing),
+    -- Windows Scrolling
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetScrollX" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetScrollY" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetScrollX" [float "scroll_x"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetScrollY" [float "scroll_y"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetScrollMaxX" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetScrollMaxY" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetScrollHereX" [float "center_x_ratio"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetScrollHereY" [float "center_y_ratio"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetScrollFromPosX" [float "local_x", float "center_x_ratio"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetScrollFromPosY" [float "local_y", float "center_y_ratio"] Nothing),
     -- frame
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "NewFrame" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopItemWidth" [] Nothing),
