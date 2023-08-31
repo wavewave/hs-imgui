@@ -900,8 +900,6 @@ toplevelfunctions =
     -- Widgets: Input with Keyboard
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InputText" [cstring "label", star CTChar "buf", uint "buf_size", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InputTextMultiline" [cstring "label", star CTChar "buf", uint "buf_size", cppclassref imVec2 "size", int "flags"] Nothing),
-    --
-    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
     -- Viewports
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imGuiViewport) "GetMainViewport" [] Nothing),
     -- draw data/list
@@ -976,10 +974,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopItemWidth" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushItemWidth" [float "item_width"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe float_ "CalcItemWidth" [] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetFrameHeight" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "Render" [] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SameLine" [] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Dummy" [cppclassref imVec2 "size"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "SliderFloat" [cstring "label", star CTFloat "v", float "v_min", float "v_max"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TextUnformatted" [cstring "text"] Nothing),
@@ -1008,6 +1003,31 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label", int "flags", float "init_width_or_weight"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label"] (Just "tableSetupColumn_")),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetColumnIndex" [int "column_n"] Nothing),
+    -- Cursor / Layout
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Separator" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SameLine" [float "offset_from_start_x", float "spacing"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SameLine" [] (Just "sameLine_")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "NewLine" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Spacing" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Dummy" [cppclassref imVec2 "size"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Indent" [float "indent_w"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "Unindent" [float "indent_w"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "BeginGroup" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndGroup" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetCursorPos" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetCursorPosX" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetCursorPosY" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetCursorPos" [cppclassref imVec2 "local_pos"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetCursorPosX" [float "local_x"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetCursorPosY" [float "local_y"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetCursorStartPos" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe (cppclasscopy_ imVec2) "GetCursorScreenPos" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetCursorScreenPos" [cppclassref imVec2 "pos"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "AlignTextToFramePadding" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetTextLineHeight" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetTextLineHeightWithSpacing" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetFrameHeight" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe float_ "GetFrameHeightWithSpacing" [] Nothing),
     --
     -- internal (experimental)
     --
