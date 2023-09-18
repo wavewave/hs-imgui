@@ -84,12 +84,12 @@
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isLinux
             [
-	      nixGL.packages.${system}.default
               pkgs.mesa
               pkgs.xorg.libX11
               pkgs.xorg.libXau
               pkgs.xorg.libXdmcp
             ]
+	    ++ pkgs.lib.optional (pkgs.stdenv.isLinux && !pkgs.lib.inPureEvalMode) nixGL.packages.${system}.default
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
             [
               pkgs.darwin.apple_sdk.frameworks.Cocoa
