@@ -3,6 +3,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/master";
     flake-utils.url = "github:numtide/flake-utils";
+    nixGL = {
+      url = "github:guibou/nixGL/main";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+	flake-utils.follows = "flake-utils";
+      };
+    };
     fficxx = {
       url = "github:wavewave/fficxx/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -13,6 +20,7 @@
     self,
     nixpkgs,
     flake-utils,
+    nixGL,
     fficxx,
   }: let
     overlay = self: super: {
@@ -76,6 +84,7 @@
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isLinux
             [
+	      nixGL.packages.${system}.default
               pkgs.mesa
               pkgs.xorg.libX11
               pkgs.xorg.libXau
