@@ -273,6 +273,9 @@ imGuiIO =
       Variable (float "DeltaTime"),
       Variable (float "Framerate"),
       Variable (cppclass imFontAtlas "Fonts"),
+      Variable (float "FontGlobalScale"),
+      Variable (bool "FontAllowUserScaling"),
+      Variable (cppclass imFont "FontDefault"),
       Variable (float "MouseWheel"),
       Variable (float "MouseWheelH")
     ]
