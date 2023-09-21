@@ -1067,7 +1067,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ gLFWwindow) "glfwCreateWindow" [int "width", int "height", cstring "title", cppclass gLFWmonitor "monitor", cppclass gLFWwindow "share"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwDestroyWindow" [cppclass gLFWwindow "window"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwGetFramebufferSize" [cppclass gLFWwindow "window", star CTInt "width", star CTInt "height"] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwInit" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe int_ "glfwInit" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwMakeContextCurrent" [cppclass gLFWwindow "window"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwPollEvents" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "glfwSwapBuffers" [cppclass gLFWwindow "window"] Nothing),
