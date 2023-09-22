@@ -332,7 +332,11 @@ imGuiViewport =
       NonVirtual FFIUnsafe (cppclasscopy_ imVec2) "GetCenter" [] Nothing,
       NonVirtual FFIUnsafe (cppclasscopy_ imVec2) "GetWorkCenter" [] Nothing
     ]
-    []
+    [ Variable (cppclassref imVec2 "Pos"),
+      Variable (cppclassref imVec2 "Size"),
+      Variable (cppclassref imVec2 "WorkPos"),
+      Variable (cppclassref imVec2 "WorkSize")
+    ]
     []
     False
 
