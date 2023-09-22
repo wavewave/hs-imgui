@@ -298,6 +298,7 @@ imGuiIO =
       Variable (float "FontGlobalScale"),
       Variable (bool "FontAllowUserScaling"),
       Variable (cppclass imFont "FontDefault"),
+      Variable (cppclassref imVec2 "DisplayFramebufferScale"),
       Variable (float "MouseWheel"),
       Variable (float "MouseWheelH")
     ]
@@ -928,6 +929,14 @@ toplevelfunctions =
     -- Widgets: Input with Keyboard
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InputText" [cstring "label", star CTChar "buf", uint "buf_size", int "flags"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InputTextMultiline" [cstring "label", star CTChar "buf", uint "buf_size", cppclassref imVec2 "size", int "flags"] Nothing),
+    -- Widgets: Menus
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginMenuBar" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndMenuBar" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginMainMenuBar" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndMainMenuBar" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginMenu" [cstring "label", bool "enabled"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndMenu" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "MenuItem" [cstring "label", cstring "shortcut", bool "selected", bool "enabled"] (Just "menuItem_")),
     -- Viewports
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imGuiViewport) "GetMainViewport" [] Nothing),
     -- draw data/list
