@@ -446,6 +446,26 @@ imGuiInputFlags_ =
       enum_header = "imgui_internal.h"
     }
 
+imGuiPopupFlags_ :: EnumType
+imGuiPopupFlags_ =
+  EnumType
+    { enum_name = "ImGuiPopupFlags_",
+      enum_cases =
+        [ "ImGuiPopupFlags_None",
+          "ImGuiPopupFlags_MouseButtonLeft",
+          "ImGuiPopupFlags_MouseButtonRight",
+          "ImGuiPopupFlags_MouseButtonMiddle",
+          "ImGuiPopupFlags_MouseButtonMask_",
+          "ImGuiPopupFlags_MouseButtonDefault_",
+          "ImGuiPopupFlags_NoOpenOverExistingPopup",
+          "ImGuiPopupFlags_NoOpenOverItems",
+          "ImGuiPopupFlags_AnyPopupId",
+          "ImGuiPopupFlags_AnyPopupLevel",
+          "ImGuiPopupFlags_AnyPopup"
+        ],
+      enum_header = "imgui_internal.h"
+    }
+
 imGuiInputTextFlags_ :: EnumType
 imGuiInputTextFlags_ =
   EnumType
@@ -886,6 +906,7 @@ enums =
     imGuiDir_,
     imGuiHoveredFlags_,
     imGuiInputTextFlags_,
+    imGuiPopupFlags_,
     imGuiTabItemFlags_,
     imGuiTableFlags_,
     imGuiTableColumnFlags_,
@@ -937,6 +958,29 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginMenu" [cstring "label", bool "enabled"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndMenu" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "MenuItem" [cstring "label", cstring "shortcut", bool "selected", bool "enabled"] (Just "menuItem_")),
+    -- Popups: begin/end functions
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPopup" [cstring "str_id", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPopupModal" [cstring "name", star CTBool "p_open", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPopup" [] Nothing),
+    -- Popups: open/close functions
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "OpenPopup" [cstring "str_id", int "popup_flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "OpenPopupOnItemClick" [cstring "str_id", int "popup_flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "CloseCurrentPopup" [] Nothing),
+    -- Popups: open+begin combined functions helpers
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPopupContextItem" [cstring "str_id", int "popup_flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPopupContextWindow" [cstring "str_id", int "popup_flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPopupContextVoid" [cstring "str_id", int "popup_flags"] Nothing),
+    -- Popups: query functions
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "IsPopupOpen" [cstring "str_id", int "flags"] Nothing),
+    -- Tables
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTable" [cstring "str_id", int "column", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTable" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableHeadersRow" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableNextRow" [int "row_flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableNextColumn" [] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label", int "flags", float "init_width_or_weight"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label"] (Just "tableSetupColumn_")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetColumnIndex" [int "column_n"] Nothing),
     -- Viewports
     TLOrdinary (TopLevelFunction FFIUnsafe (cppclass_ imGuiViewport) "GetMainViewport" [] Nothing),
     -- draw data/list
@@ -1042,15 +1086,6 @@ toplevelfunctions =
     -- ID
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushID" [int "int_id"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopID" [] Nothing),
-    -- table
-    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginTable" [cstring "str_id", int "column", int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndTable" [] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableHeadersRow" [] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableNextRow" [int "row_flags"] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableNextColumn" [] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label", int "flags", float "init_width_or_weight"] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetupColumn" [cstring "label"] (Just "tableSetupColumn_")),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "TableSetColumnIndex" [int "column_n"] Nothing),
     -- Cursor / Layout
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "Separator" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "SameLine" [float "offset_from_start_x", float "spacing"] Nothing),
