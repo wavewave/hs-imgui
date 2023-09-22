@@ -325,10 +325,13 @@ imGuiViewport =
   Class
     cabal
     "ImGuiViewport"
-    []
+    [deletable]
     mempty
     Nothing
-    []
+    [ Constructor [] Nothing,
+      NonVirtual FFIUnsafe (cppclasscopy_ imVec2) "GetCenter" [] Nothing,
+      NonVirtual FFIUnsafe (cppclasscopy_ imVec2) "GetWorkCenter" [] Nothing
+    ]
     []
     []
     False
