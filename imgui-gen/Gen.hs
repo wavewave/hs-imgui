@@ -240,8 +240,30 @@ imFontAtlas =
     mempty
     Nothing
     [ Constructor [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ imFont) "AddFont" [cppclass imFontConfig "font_cfg"] Nothing,
       NonVirtual FFIUnsafe (cppclass_ imFont) "AddFontDefault" [] Nothing,
-      NonVirtual FFIUnsafe (cppclass_ imFont) "AddFontFromFileTTF" [cstring "filename", float "size_pixels"] Nothing
+      NonVirtual FFIUnsafe (cppclass_ imFont) "AddFontFromFileTTF" [cstring "filename", float "size_pixels"] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ imFont) "AddFontFromMemoryTTF" [voidp "font_data", int "font_data_size", float "size_pixels"] Nothing,
+      NonVirtual FFIUnsafe void_ "ClearInputData" [] Nothing,
+      NonVirtual FFIUnsafe void_ "ClearTexData" [] Nothing,
+      NonVirtual FFIUnsafe void_ "ClearFonts" [] Nothing,
+      NonVirtual FFIUnsafe void_ "Clear" [] Nothing,
+      NonVirtual FFIUnsafe bool_ "Build" [] Nothing,
+      NonVirtual FFIUnsafe bool_ "IsBuilt" [] Nothing
+    ]
+    []
+    []
+    False
+
+imFontConfig :: Class
+imFontConfig =
+  Class
+    cabal
+    "ImFontConfig"
+    [deletable]
+    mempty
+    Nothing
+    [ Constructor [] Nothing
     ]
     []
     []
@@ -848,6 +870,7 @@ classes =
     imDrawList,
     imFont,
     imFontAtlas,
+    imFontConfig,
     imGuiContext,
     imGuiIO,
     imGuiTextBuffer,
@@ -1107,6 +1130,7 @@ headers =
     modImports "ImDrawList" [] ["imgui.h"],
     modImports "ImFont" [] ["imgui.h"],
     modImports "ImFontAtlas" [] ["imgui.h"],
+    modImports "ImFontConfig" [] ["imgui.h"],
     modImports "ImGuiContext" [] ["imgui.h"],
     modImports "ImGuiIO" [] ["imgui.h"],
     modImports "ImGuiTextBuffer" [] ["imgui.h"],
