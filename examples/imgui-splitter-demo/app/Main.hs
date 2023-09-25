@@ -2,7 +2,7 @@
 
 module Main where
 
-import Control.Monad.Extra (whileM)
+import Control.Monad.Extra (whenM, whileM)
 import Data.Bits ((.|.))
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.String (IsString (..))
@@ -19,6 +19,7 @@ import ImGui.ImGuiIO.Implementation
   ( imGuiIO_ConfigFlags_get,
     imGuiIO_ConfigFlags_set,
     imGuiIO_Framerate_get,
+    imGuiIO_MouseDelta_get,
   )
 import ImGui.ImGuiViewport.Implementation
   ( imGuiViewport_WorkPos_get,
@@ -32,14 +33,8 @@ import System.IO.Unsafe (unsafePerformIO)
 instance IsString CString where
   fromString s = unsafePerformIO $ newCString s
 
-eachFrameRender :: GLFWwindow -> (IORef CFloat, IORef CFloat) -> IO ()
-eachFrameRender window (w_ref, h_ref) = do
-  glfwPollEvents
-  -- Start the Dear ImGui frame
-  imGui_ImplOpenGL3_NewFrame
-  imGui_ImplGlfw_NewFrame
-  newFrame
-
+eachFrameRender :: ImGuiIO -> GLFWwindow -> (IORef CFloat, IORef CFloat) -> IO ()
+eachFrameRender io window (w_ref, h_ref) = do
   viewport <- getMainViewport
   let flags =
         fromIntegral $
@@ -64,6 +59,9 @@ eachFrameRender window (w_ref, h_ref) = do
   --
   vsplitter_size <- newImVec2 8.0 h
   invisibleButton ("vsplitter" :: CString) vsplitter_size 0
+  whenM (toBool <$> isItemActive) $ do
+    delta_x <- imGuiIO_MouseDelta_get io >>= imVec2_x_get
+    modifyIORef' w_ref (+ delta_x)
   delete vsplitter_size
   --
   sameLine_
@@ -75,6 +73,9 @@ eachFrameRender window (w_ref, h_ref) = do
   --
   hsplitter_size <- newImVec2 (-1.0) 8.0
   invisibleButton ("hsplitter" :: CString) hsplitter_size 0
+  whenM (toBool <$> isItemActive) $ do
+    delta_y <- imGuiIO_MouseDelta_get io >>= imVec2_y_get
+    modifyIORef' h_ref (+ delta_y)
   delete hsplitter_size
   --
   beginChild ("child3" :: CString) zero (fromBool True) 0
@@ -132,8 +133,15 @@ main = do
 
   -- main loop
   whileM $ do
-    eachFrameRender window (ref_w, ref_h)
-    -- c_draw_shim window clear_color
+    glfwPollEvents
+    -- Start the Dear ImGui frame
+    imGui_ImplOpenGL3_NewFrame
+    imGui_ImplGlfw_NewFrame
+    newFrame
+
+    -- main rendering
+    eachFrameRender io window (ref_w, ref_h)
+
     alloca $ \p_dispW ->
       alloca $ \p_dispH -> do
         glfwGetFramebufferSize window p_dispW p_dispH

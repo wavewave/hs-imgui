@@ -300,7 +300,8 @@ imGuiIO =
       Variable (cppclass imFont "FontDefault"),
       Variable (cppclassref imVec2 "DisplayFramebufferScale"),
       Variable (float "MouseWheel"),
-      Variable (float "MouseWheelH")
+      Variable (float "MouseWheelH"),
+      Variable (cppclassref imVec2 "MouseDelta")
     ]
     []
     False
