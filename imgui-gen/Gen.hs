@@ -300,7 +300,8 @@ imGuiIO =
       Variable (cppclass imFont "FontDefault"),
       Variable (cppclassref imVec2 "DisplayFramebufferScale"),
       Variable (float "MouseWheel"),
-      Variable (float "MouseWheelH")
+      Variable (float "MouseWheelH"),
+      Variable (cppclassref imVec2 "MouseDelta")
     ]
     []
     False
@@ -948,10 +949,13 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetTabItemClosed" [cstring "tab_or_docked_window_label"] Nothing),
     -- Widgets: Main
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Button" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "SmallButton" [cstring "label"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "InvisibleButton" [cstring "str_id", cppclassref imVec2 "size", int "flags"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ArrowButton" [cstring "str_id", int "dir"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "Checkbox" [cstring "label", star CTBool "v"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "RadioButton" [cstring "label", bool "active"] (Just "radioButton_")),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "RadioButton" [cstring "label", star CTInt "v", int "v_button"] Nothing),
-    -- Widgets: ColorEdit
+    -- Widgets: Color Editor/Picker
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ColorEdit3" [cstring "label", star CTFloat "col"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "ColorEdit4" [cstring "label", star CTFloat "col"] Nothing),
     -- Widgets: Input with Keyboard
@@ -1088,6 +1092,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushFont" [cppclass imFont "font"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopFont" [] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushStyleVar" [int "idx", float "val"] Nothing),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushStyleVar" [int "idx", cppclassref imVec2 "val"] (Just "PushStyleVar2")),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopStyleVar" [int "count"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "PopStyleVar" [] (Just "PopStyleVar_")),
     -- ID
