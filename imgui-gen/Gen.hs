@@ -126,6 +126,7 @@ cabal =
       cabal_extrafiles = [],
       cabal_pkg_config_depends = ["libimgui", "glfw3"],
       cabal_buildType = Simple
+      -- NOTE: on macos, we also need ot add "frameworks: OpenGL"
     }
 
 gLFWmonitor :: Class

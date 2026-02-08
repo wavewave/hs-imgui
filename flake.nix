@@ -30,6 +30,9 @@
       implot = self.callPackage ./nix/implot/default.nix {
         frameworks = self.darwin.apple_sdk.frameworks;
       };
+      implot3d = self.callPackage ./nix/implot3d/default.nix {
+        frameworks = self.darwin.apple_sdk.frameworks;
+      };
     };
   in
     flake-utils.lib.eachDefaultSystem (system: let
@@ -58,7 +61,7 @@
           ]
           ++ (
             if isEnv
-            then [p.imgui p.implot]
+            then [p.imgui p.implot p.implot3d]
             else []
           ));
         pyenv =
@@ -76,6 +79,7 @@
               pkgs.cabal-install
               pkgs.imgui
               pkgs.implot
+              pkgs.implot3d
               pkgs.glfw
               pkgs.alejandra
               pkgs.pkgconfig
