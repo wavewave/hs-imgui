@@ -205,10 +205,48 @@ imPlot3DFlags_ =
       enum_header = "implot3d.h"
     }
 
+imPlot3DAxisFlags_ :: EnumType
+imPlot3DAxisFlags_ =
+  EnumType
+    { enum_name = "ImPlot3DAxisFlags_",
+      enum_cases =
+        [ "ImPlot3DAxisFlags_None",
+          "ImPlot3DAxisFlags_NoLabel",
+          "ImPlot3DAxisFlags_NoGridLines",
+          "ImPlot3DAxisFlags_NoTickMarks",
+          "ImPlot3DAxisFlags_NoTickLabels",
+          "ImPlot3DAxisFlags_LockMin",
+          "ImPlot3DAxisFlags_LockMax",
+          "ImPlot3DAxisFlags_AutoFit",
+          "ImPlot3DAxisFlags_Invert",
+          "ImPlot3DAxisFlags_PanStretch",
+          "ImPlot3DAxisFlags_Lock",
+          "ImPlot3DAxisFlags_NoDecorations"
+        ],
+      enum_header = "implot3d.h"
+    }
+
+imPlot3DLineFlags_ :: EnumType
+imPlot3DLineFlags_ =
+  EnumType
+    { enum_name = "ImPlot3DLineFlags_",
+      enum_cases =
+        [ "ImPlot3DLineFlags_None",
+          "ImPlot3DLineFlags_NoLegend",
+          "ImPlot3DLineFlags_NoFit",
+          "ImPlot3DLineFlags_Segments",
+          "ImPlot3DLineFlags_Loop",
+          "ImPlot3DLineFlags_SkipNaN"
+        ],
+      enum_header = "implot3d.h"
+    }
+
 classes = []
 
 enums =
-  [ imPlot3DFlags_
+  [ imPlot3DFlags_,
+    imPlot3DAxisFlags_,
+    imPlot3DLineFlags_
   ]
 
 toplevelfunctions :: [TopLevel]
@@ -217,7 +255,7 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showDemoWindow")),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] (Just "beginPlot3D")),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPlot" [] (Just "EndPlot3D")),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", cstring "z_label"] (Just "setupAxes3D")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", cstring "z_label", int "x_flags", int "y_flags", int "z_flags"] (Just "setupAxes3D")),
     TLTemplate
       ( TopLevelTemplateFunction
           { topleveltfunc_safety = FFIUnsafe,
@@ -230,7 +268,10 @@ toplevelfunctions =
                 Arg (TemplateParamPointer "t1") "xs",
                 Arg (TemplateParamPointer "t1") "ys",
                 Arg (TemplateParamPointer "t1") "zs",
-                int "count"
+                int "count",
+                int "flags",
+                int "offset",
+                int "stride"
               ]
           }
       )

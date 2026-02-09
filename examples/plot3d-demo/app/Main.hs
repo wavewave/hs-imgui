@@ -66,14 +66,20 @@ demoLinePlot3D :: (Ptr CFloat, Ptr CFloat, Ptr CFloat) -> IO ()
 demoLinePlot3D (px1, py1, pz1) = do
   size <- newImVec2 (-1) 0
   whenM (toBool <$> ImPlot3D.beginPlot3D ("Line Plots" :: CString) size (fromIntegral (fromEnum ImPlot3DFlags_None))) $ do
-    ImPlot3D.setupAxes3D ("x" :: CString) ("y" :: CString) ("z" :: CString)
+    ImPlot3D.setupAxes3D
+      ("x" :: CString)
+      ("y" :: CString)
+      ("z" :: CString)
+      (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
+      (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
+      (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
     t <- getTime
     for_ [0 .. 1000] $ \i -> do
       let x = fromIntegral i * 0.001
       pokeElemOff px1 i x
       pokeElemOff py1 i (0.5 + 0.5 * cos (50.0 * (x + realToFrac t / 10.0)))
       pokeElemOff pz1 i (0.5 + 0.5 * sin (50.0 * (x + realToFrac t / 10.0)))
-    ImPlot3D.plotLine3D "f(x)" px1 py1 pz1 1001
+    ImPlot3D.plotLine3D "f(x)" px1 py1 pz1 1001 (fromIntegral (fromEnum ImPlot3DLineFlags_None)) 0 4 {- sizeof(float) -}
     ImPlot3D.endPlot3D
   delete size
 
