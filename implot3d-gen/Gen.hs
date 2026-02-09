@@ -241,12 +241,28 @@ imPlot3DLineFlags_ =
       enum_header = "implot3d.h"
     }
 
+imPlot3DSurfaceFlags_ :: EnumType
+imPlot3DSurfaceFlags_ =
+  EnumType
+    { enum_name = "ImPlot3DSurfaceFlags_",
+      enum_cases =
+        [ "ImPlot3DSurfaceFlags_None",
+          "ImPlot3DSurfaceFlags_NoLegend",
+          "ImPlot3DSurfaceFlags_NoFit",
+          "ImPlot3DSurfaceFlags_NoLines",
+          "ImPlot3DSurfaceFlags_NoFill",
+          "ImPlot3DSurfaceFlags_NoMarkers"
+        ],
+      enum_header = "implot3d.h"
+    }
+
 classes = []
 
 enums =
   [ imPlot3DFlags_,
     imPlot3DAxisFlags_,
-    imPlot3DLineFlags_
+    imPlot3DLineFlags_,
+    imPlot3DSurfaceFlags_
   ]
 
 toplevelfunctions :: [TopLevel]
@@ -269,6 +285,28 @@ toplevelfunctions =
                 Arg (TemplateParamPointer "t1") "ys",
                 Arg (TemplateParamPointer "t1") "zs",
                 int "count",
+                int "flags",
+                int "offset",
+                int "stride"
+              ]
+          }
+      ),
+    TLTemplate
+      ( TopLevelTemplateFunction
+          { topleveltfunc_safety = FFIUnsafe,
+            topleveltfunc_params = ["t1"],
+            topleveltfunc_ret = void_,
+            topleveltfunc_name = "plotSurface",
+            topleveltfunc_oname = "ImPlot3D::PlotSurface",
+            topleveltfunc_args =
+              [ cstring "label_id",
+                Arg (TemplateParamPointer "t1") "xs",
+                Arg (TemplateParamPointer "t1") "ys",
+                Arg (TemplateParamPointer "t1") "zs",
+                int "x_count",
+                int "y_count",
+                double "scale_min",
+                double "scale_max",
                 int "flags",
                 int "offset",
                 int "stride"

@@ -8,7 +8,7 @@ module Main where
 import Control.Monad.Extra (whenM, whileM)
 import Data.Bits ((.|.))
 import Data.Foldable (for_, traverse_)
-import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
+import Data.IORef (IORef, modifyIORef', newIORef, readIORef, writeIORef)
 import Data.String (IsString (..))
 import FFICXX.Runtime.Cast (FPtr (..))
 import FFICXX.Runtime.TH (IsCPrimitive (..), TemplateParamInfo (..))
@@ -54,6 +54,17 @@ ImPlot3D.TH.genPlotLine3DInstanceFor
       }
   )
 
+ImPlot3D.TH.genPlotSurfaceInstanceFor
+  CPrim
+  ( [t|Ptr CFloat|],
+    TPInfo
+      { tpinfoCxxType = "float",
+        tpinfoCxxHeaders = [],
+        tpinfoCxxNamespaces = [],
+        tpinfoSuffix = "float"
+      }
+  )
+
 showFramerate :: ImGuiIO -> IO ()
 showFramerate io = do
   begin ("Framerate monitor" :: CString) nullPtr 0
@@ -64,8 +75,15 @@ showFramerate io = do
 
 demoLinePlot3D :: (Ptr CFloat, Ptr CFloat, Ptr CFloat) -> IO ()
 demoLinePlot3D (px1, py1, pz1) = do
+  t <- getTime
+  for_ [0 .. 1000] $ \i -> do
+    let x = fromIntegral i * 0.001
+    pokeElemOff px1 i x
+    pokeElemOff py1 i (0.5 + 0.5 * cos (50.0 * (x + realToFrac t / 10.0)))
+    pokeElemOff pz1 i (0.5 + 0.5 * sin (50.0 * (x + realToFrac t / 10.0)))
+
   size <- newImVec2 (-1) 0
-  whenM (toBool <$> ImPlot3D.beginPlot3D ("Line Plots" :: CString) size (fromIntegral (fromEnum ImPlot3DFlags_None))) $ do
+  whenM (toBool <$> ImPlot3D.beginPlot3D ("Line Plot" :: CString) size (fromIntegral (fromEnum ImPlot3DFlags_None))) $ do
     ImPlot3D.setupAxes3D
       ("x" :: CString)
       ("y" :: CString)
@@ -73,18 +91,46 @@ demoLinePlot3D (px1, py1, pz1) = do
       (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
       (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
       (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
-    t <- getTime
-    for_ [0 .. 1000] $ \i -> do
-      let x = fromIntegral i * 0.001
-      pokeElemOff px1 i x
-      pokeElemOff py1 i (0.5 + 0.5 * cos (50.0 * (x + realToFrac t / 10.0)))
-      pokeElemOff pz1 i (0.5 + 0.5 * sin (50.0 * (x + realToFrac t / 10.0)))
-    ImPlot3D.plotLine3D "f(x)" px1 py1 pz1 1001 (fromIntegral (fromEnum ImPlot3DLineFlags_None)) 0 4 {- sizeof(float) -}
+    ImPlot3D.plotLine3D ("f(x)" :: CString) px1 py1 pz1 1001 (fromIntegral (fromEnum ImPlot3DLineFlags_None)) 0 4 {- sizeof(float) -}
     ImPlot3D.endPlot3D
   delete size
 
-demoSurfacePlot :: IO ()
-demoSurfacePlot = do
+demoSurfacePlot :: IORef CFloat -> (Ptr CFloat, Ptr CFloat, Ptr CFloat) -> IO ()
+demoSurfacePlot ref (px, py, pz) = do
+  t <- readIORef ref
+  io <- getIO
+  dt <- imGuiIO_DeltaTime_get io
+  let t' = t + dt
+  writeIORef ref t'
+  let n :: Int
+      n = 20
+      min_val = -1.0
+      max_val = 1.0
+      step = (max_val - min_val) / (fromIntegral n - 1.0)
+  for_ [0 .. (n-1)] $ \i -> do
+    for_ [0 .. (n-1)] $ \j -> do
+      let idx = i * fromIntegral n + j
+          x, y, z :: CFloat
+          x = min_val + (fromIntegral j) * step
+          y = min_val + (fromIntegral i) * step
+          z = sin (2*t' + sqrt (x*x + y*y))
+      pokeElemOff px idx x
+      pokeElemOff py idx y
+      pokeElemOff pz idx z
+
+  size <- newImVec2 (-1) 0
+  whenM (toBool <$> ImPlot3D.beginPlot3D ("Surface Plot" :: CString) size (fromIntegral (fromEnum ImPlot3DFlags_None))) $ do
+    ImPlot3D.setupAxes3D
+      ("x" :: CString)
+      ("y" :: CString)
+      ("z" :: CString)
+      (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
+      (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
+      (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
+
+    ImPlot3D.plotSurface ("Wave Surface" :: CString) px py pz (fromIntegral n) (fromIntegral n) 0.0 0.0 (fromIntegral (fromEnum ImPlot3DSurfaceFlags_NoMarkers)) 0 4 {- sizeof(float) -}
+    ImPlot3D.endPlot3D
+
   pure ()
 
 imPlot3DDemo :: Resource -> IO ()
@@ -95,7 +141,7 @@ imPlot3DDemo res = do
       demoLinePlot3D (res_array1 res)
       endTabItem
     whenM (toBool <$> beginTabItem_ ("Surface plot" :: CString)) $ do
-      demoSurfacePlot
+      demoSurfacePlot (res_time res) (res_array2 res)
       endTabItem
     endTabBar
   end
@@ -103,18 +149,28 @@ imPlot3DDemo res = do
 
 data Resource = Resource
   { res_array1 :: (Ptr CFloat, Ptr CFloat, Ptr CFloat),
-    res_disp :: (Ptr CInt, Ptr CInt)
+    res_array2 :: (Ptr CFloat, Ptr CFloat, Ptr CFloat),
+    res_disp :: (Ptr CInt, Ptr CInt),
+    res_time :: IORef CFloat
   }
+
+alloca3DArray :: (Int, Int, Int) -> ((Ptr CFloat, Ptr CFloat, Ptr CFloat) -> IO a) -> IO a
+alloca3DArray (nx, ny, nz) f =
+  allocaArray nx $ \(px :: Ptr CFloat) ->
+    allocaArray ny $ \(py :: Ptr CFloat) ->
+      allocaArray nz $ \(pz :: Ptr CFloat) ->
+        f (px, py, pz)
 
 withRes :: (Resource -> IO a) -> IO a
 withRes f =
-  allocaArray 1001 $ \(px1 :: Ptr CFloat) ->
-    allocaArray 1001 $ \(py1 :: Ptr CFloat) ->
-      allocaArray 1001 $ \(pz1 :: Ptr CFloat) ->
-        alloca $ \(p_dispW :: Ptr CInt) ->
-          alloca $ \(p_dispH :: Ptr CInt) ->
-            let res = Resource (px1, py1, pz1) (p_dispW, p_dispH)
-             in f res
+  alloca3DArray (1001, 1001, 1001) $ \(px1, py1, pz1) ->
+    alloca3DArray (400, 400, 400) $ \(px2, py2, pz2) ->
+      alloca $ \(p_dispW :: Ptr CInt) ->
+        alloca $ \(p_dispH :: Ptr CInt) -> do
+          t0 <- realToFrac <$> getTime
+          ref <- newIORef t0
+          let res = Resource (px1, py1, pz1) (px2, py2, pz2) (p_dispW, p_dispH) ref
+          f res
 
 main :: IO ()
 main = do
