@@ -184,15 +184,70 @@ cabal =
       cabal_buildType = Simple
     }
 
+imPlot3DFlags_ :: EnumType
+imPlot3DFlags_ =
+  EnumType
+    { enum_name = "ImPlot3DFlags_",
+      enum_cases =
+        [ "ImPlot3DFlags_None",
+          "ImPlot3DFlags_NoTitle",
+          "ImPlot3DFlags_NoLegend",
+          "ImPlot3DFlags_NoMouseText",
+          "ImPlot3DFlags_NoClip",
+          "ImPlot3DFlags_NoMenus",
+          "ImPlot3DFlags_Equal",
+          "ImPlot3DFlags_NoRotate",
+          "ImPlot3DFlags_NoPan",
+          "ImPlot3DFlags_NoZoom",
+          "ImPlot3DFlags_NoInputs",
+          "ImPlot3DFlags_CanvasOnly"
+        ],
+      enum_header = "implot3d.h"
+    }
+
 classes = []
 
-enums = []
+enums =
+  [ imPlot3DFlags_
+  ]
 
-toplevelfunctions = []
+toplevelfunctions :: [TopLevel]
+toplevelfunctions =
+  [ TLOrdinary (TopLevelFunction FFIUnsafe void_ "CreateContext" [] (Just "createContext")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showDemoWindow")),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] (Just "beginPlot3D")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPlot" [] (Just "EndPlot3D")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", cstring "z_label"] (Just "setupAxes3D")),
+    TLTemplate
+      ( TopLevelTemplateFunction
+          { topleveltfunc_safety = FFIUnsafe,
+            topleveltfunc_params = ["t1"],
+            topleveltfunc_ret = void_,
+            topleveltfunc_name = "plotLine3D",
+            topleveltfunc_oname = "ImPlot3D::PlotLine",
+            topleveltfunc_args =
+              [ cstring "label_id",
+                Arg (TemplateParamPointer "t1") "xs",
+                Arg (TemplateParamPointer "t1") "ys",
+                Arg (TemplateParamPointer "t1") "zs",
+                int "count"
+              ]
+          }
+      )
+  ]
 
 templates = []
 
-headers = []
+headers =
+  [ ( MU_TopLevel,
+      ModuleUnitImports
+        { muimports_namespaces = ["ImPlot3D"],
+          muimports_headers =
+            [ "implot3d.h"
+            ]
+        }
+    )
+  ]
 
 extraLib = []
 
