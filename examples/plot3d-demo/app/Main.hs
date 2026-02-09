@@ -86,6 +86,21 @@ imPlot3DDemo (px1, py1, pz1) = do
   delete size
   end
 
+data Resource = Resource
+  { res_array1 :: (Ptr CFloat, Ptr CFloat, Ptr CFloat),
+    res_disp :: (Ptr CInt, Ptr CInt)
+  }
+
+withRes :: (Resource -> IO a) -> IO a
+withRes f =
+  allocaArray 1001 $ \(px1 :: Ptr CFloat) ->
+    allocaArray 1001 $ \(py1 :: Ptr CFloat) ->
+      allocaArray 1001 $ \(pz1 :: Ptr CFloat) ->
+        alloca $ \(p_dispW :: Ptr CInt) ->
+          alloca $ \(p_dispH :: Ptr CInt) ->
+            let res = Resource (px1, py1, pz1) (p_dispW, p_dispH)
+             in f res
+
 main :: IO ()
 main = do
   let glsl_version :: CString
@@ -130,37 +145,32 @@ main = do
 
   clear_color <- newImVec4 0.45 0.55 0.60 1.00
 
-  allocaArray 1001 $ \(px1 :: Ptr CFloat) ->
-    allocaArray 1001 $ \(py1 :: Ptr CFloat) ->
-      allocaArray 1001 $ \(pz1 :: Ptr CFloat) -> do
+  withRes $ \res -> do
+   -- main loop
+   whileM $ do
+     glfwPollEvents
+     -- Start the Dear ImGui frame
+     imGui_ImplOpenGL3_NewFrame
+     imGui_ImplGlfw_NewFrame
+     newFrame
 
-        -- main loop
-        whileM $ do
-          glfwPollEvents
-          -- Start the Dear ImGui frame
-          imGui_ImplOpenGL3_NewFrame
-          imGui_ImplGlfw_NewFrame
-          newFrame
+     showFramerate io
+     imPlot3DDemo (res_array1 res)
+     render
 
-          showFramerate io
-          -- ImPlot3D.showDemoWindow nullPtr
-          imPlot3DDemo (px1, py1, pz1)
-          render
+     let (p_dispW, p_dispH) = res_disp res
+     glfwGetFramebufferSize window p_dispW p_dispH
+     dispW <- peek p_dispW
+     dispH <- peek p_dispH
+     glViewport 0 0 dispW dispH
+     x <- imVec4_x_get clear_color
+     y <- imVec4_y_get clear_color
+     z <- imVec4_z_get clear_color
+     w <- imVec4_w_get clear_color
+     glClearColor (x * w) (y * w) (z * w) w
+     glClear 0x4000 {- GL_COLOR_BUFFER_BIT -}
 
-          alloca $ \p_dispW ->
-            alloca $ \p_dispH -> do
-              glfwGetFramebufferSize window p_dispW p_dispH
-              dispW <- peek p_dispW
-              dispH <- peek p_dispH
-              glViewport 0 0 dispW dispH
-              x <- imVec4_x_get clear_color
-              y <- imVec4_y_get clear_color
-              z <- imVec4_z_get clear_color
-              w <- imVec4_w_get clear_color
-              glClearColor (x * w) (y * w) (z * w) w
-              glClear 0x4000 {- GL_COLOR_BUFFER_BIT -}
+     imGui_ImplOpenGL3_RenderDrawData =<< getDrawData
+     glfwSwapBuffers window
 
-          imGui_ImplOpenGL3_RenderDrawData =<< getDrawData
-          glfwSwapBuffers window
-
-          not . toBool <$> glfwWindowShouldClose window
+     not . toBool <$> glfwWindowShouldClose window
