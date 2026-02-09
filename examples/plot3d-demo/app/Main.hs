@@ -62,15 +62,8 @@ showFramerate io = do
     textUnformatted c_str
   end
 
-imPlot3DDemo :: (Ptr CFloat, Ptr CFloat, Ptr CFloat) -> IO ()
-imPlot3DDemo (px1, py1, pz1) = do
-  begin ("ImPlot3D Demo" :: CString) nullPtr 0
-  whenM (toBool <$> beginMenuBar) $ do
-    whenM (toBool <$> beginMenu ("Tools" :: CString) (fromBool True)) $ do
-      menuItem_ ("Metrics" :: CString) ("" :: CString) (fromBool False) (fromBool True)
-      endMenu
-    endMenuBar
-  textUnformatted ("ImPlot3D says olá!" :: CString)
+demoLinePlot3D :: (Ptr CFloat, Ptr CFloat, Ptr CFloat) -> IO ()
+demoLinePlot3D (px1, py1, pz1) = do
   size <- newImVec2 (-1) 0
   whenM (toBool <$> ImPlot3D.beginPlot3D ("Line Plots" :: CString) size (fromIntegral (fromEnum ImPlot3DFlags_None))) $ do
     ImPlot3D.setupAxes3D ("x" :: CString) ("y" :: CString) ("z" :: CString)
@@ -81,10 +74,26 @@ imPlot3DDemo (px1, py1, pz1) = do
       pokeElemOff py1 i (0.5 + 0.5 * cos (50.0 * (x + realToFrac t / 10.0)))
       pokeElemOff pz1 i (0.5 + 0.5 * sin (50.0 * (x + realToFrac t / 10.0)))
     ImPlot3D.plotLine3D "f(x)" px1 py1 pz1 1001
-
     ImPlot3D.endPlot3D
   delete size
+
+demoSurfacePlot :: IO ()
+demoSurfacePlot = do
+  pure ()
+
+imPlot3DDemo :: Resource -> IO ()
+imPlot3DDemo res = do
+  begin ("ImPlot3D Demo" :: CString) nullPtr 0
+  whenM (toBool <$> beginTabBar ("ImPlot3DDemoTabs" :: CString)) $ do
+    whenM (toBool <$> beginTabItem_ ("Line plot" :: CString)) $ do
+      demoLinePlot3D (res_array1 res)
+      endTabItem
+    whenM (toBool <$> beginTabItem_ ("Surface plot" :: CString)) $ do
+      demoSurfacePlot
+      endTabItem
+    endTabBar
   end
+
 
 data Resource = Resource
   { res_array1 :: (Ptr CFloat, Ptr CFloat, Ptr CFloat),
@@ -155,7 +164,10 @@ main = do
      newFrame
 
      showFramerate io
-     imPlot3DDemo (res_array1 res)
+
+     -- start demo
+     imPlot3DDemo res
+
      render
 
      let (p_dispW, p_dispH) = res_disp res
