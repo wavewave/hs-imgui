@@ -1,0 +1,5 @@
+[build]
+execution_platforms = prelude//platforms:default
+
+[test]
+re_profile = default
