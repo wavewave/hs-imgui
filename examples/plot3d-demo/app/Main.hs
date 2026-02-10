@@ -119,6 +119,7 @@ demoSurfacePlot ref (px, py, pz) = do
       pokeElemOff pz idx z
 
   size <- newImVec2 (-1) 0
+  ImPlot3D.pushColormap (fromIntegral (fromEnum {- ImPlot3DColormap_Viridis -} ImPlot3DColormap_Plasma))
   whenM (toBool <$> ImPlot3D.beginPlot3D ("Surface Plot" :: CString) size (fromIntegral (fromEnum ImPlot3DFlags_None))) $ do
     ImPlot3D.setupAxes3D
       ("x" :: CString)
@@ -127,7 +128,7 @@ demoSurfacePlot ref (px, py, pz) = do
       (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
       (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
       (fromIntegral (fromEnum ImPlot3DAxisFlags_None))
-
+    ImPlot3D.setupAxesLimits (-1.0) 1.0 (-1.0) 1.0 (-1.5) 1.5
     ImPlot3D.plotSurface ("Wave Surface" :: CString) px py pz (fromIntegral n) (fromIntegral n) 0.0 0.0 (fromIntegral (fromEnum ImPlot3DSurfaceFlags_NoMarkers)) 0 4 {- sizeof(float) -}
     ImPlot3D.endPlot3D
 
