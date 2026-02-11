@@ -9,9 +9,11 @@ system_genrule_toolchain(
 impure_runinfo(
     name = "ghc",
     executable = "ghc",
+    visibility = ["PUBLIC"],
 )
 
 impure_runinfo(
     name = "cabal",
-    executable = "cabal"
+    executable = "cabal",
+    visibility = ["PUBLIC"],
 )
