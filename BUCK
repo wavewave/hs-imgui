@@ -114,3 +114,22 @@ genrule(
        cp -a examples/plot3d-demo/dist-newstyle $OUT
     ''',
 )
+
+genrule(
+    name = "plot3d_demo_sh",
+    out = "plot3d_demo.sh",
+    cmd = '''
+cat > $OUT <<EOF
+#!$BASH
+set -e
+cd \\`dirname "\\$0"\\`
+$(location :build_plot3d_demo)/build/aarch64-osx/ghc-9.6.2/plot3d-demo-0.1.0.0/x/plot3d-demo/build/plot3d-demo/plot3d-demo
+EOF
+chmod +x $OUT
+    ''',
+)
+
+sh_binary(
+    name = "run_plot3d_demo",
+    main = ":plot3d_demo_sh",
+)
