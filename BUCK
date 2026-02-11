@@ -105,6 +105,45 @@ genrule(
 
 ### DEMO
 
+
+# plot-demo
+
+genrule(
+    name = "build_draw_demo",
+    srcs = glob(
+        ["examples/draw-demo/**/*"],
+    ),
+    out = "draw_demo",
+    cmd = '''
+       pushd examples/draw-demo
+       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
+         --ghc-options="-framework OpenGL" \
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/
+       popd
+       cp -a examples/draw-demo/dist-newstyle $OUT
+    ''',
+)
+
+genrule(
+    name = "draw_demo_sh",
+    out = "draw_demo.sh",
+    cmd = '''
+cat > $OUT <<EOF
+#!$BASH
+set -e
+cd \\`dirname "\\$0"\\`
+$(location :build_draw_demo)/build/aarch64-osx/ghc-9.6.2/draw-demo-0.1.0.0/x/draw-demo/build/draw-demo/draw-demo
+EOF
+chmod +x $OUT
+    ''',
+)
+
+sh_binary(
+    name = "run_draw_demo",
+    main = ":draw_demo_sh",
+)
+
 # plot-demo
 
 genrule(
