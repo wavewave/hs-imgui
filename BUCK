@@ -1,3 +1,5 @@
+### imgui
+
 genrule(
     name = "imgui_gen",
     srcs = [
@@ -29,6 +31,8 @@ genrule(
        cp -a imgui/dist-newstyle $OUT
     ''',
 )
+
+### implot
 
 genrule(
     name = "implot_gen",
@@ -63,6 +67,8 @@ genrule(
     ''',
 )
 
+### implot3d
+
 genrule(
     name = "implot3d_gen",
     srcs = [
@@ -96,6 +102,48 @@ genrule(
        cp -a implot3d/dist-newstyle $OUT
     ''',
 )
+
+### DEMO
+
+# plot-demo
+
+genrule(
+    name = "build_plot_demo",
+    srcs = glob(
+        ["examples/plot-demo/**/*"],
+    ),
+    out = "plot_demo",
+    cmd = '''
+       pushd examples/plot-demo
+       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
+         --ghc-options="-framework OpenGL" \
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/
+       popd
+       cp -a examples/plot-demo/dist-newstyle $OUT
+    ''',
+)
+
+genrule(
+    name = "plot_demo_sh",
+    out = "plot_demo.sh",
+    cmd = '''
+cat > $OUT <<EOF
+#!$BASH
+set -e
+cd \\`dirname "\\$0"\\`
+$(location :build_plot_demo)/build/aarch64-osx/ghc-9.6.2/plot-demo-0.1.0.0/x/plot-demo/build/plot-demo/plot-demo
+EOF
+chmod +x $OUT
+    ''',
+)
+
+sh_binary(
+    name = "run_plot_demo",
+    main = ":plot_demo_sh",
+)
+
+# plot3d-demo
 
 genrule(
     name = "build_plot3d_demo",
