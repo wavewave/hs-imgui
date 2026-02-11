@@ -33,3 +33,21 @@ genrule(
     out = "implot",
     cmd = "$(location :implot_gen) gen --template=implot-gen/template --output=$OUT",
 )
+
+genrule(
+    name = "implot3d_gen",
+    srcs = [
+        "implot3d-gen/Gen.hs",
+    ],
+    out = "implot3d_gen",
+    cmd = "$(exe_target @toolchains//:ghc) implot3d-gen/Gen.hs -o ${OUT}",
+)
+
+genrule(
+    name = "generate_implot3d",
+    srcs = glob(
+        ["implot3d-gen/template/*"],
+    ),
+    out = "implot3d",
+    cmd = "$(location :implot3d_gen) gen --template=implot3d-gen/template --output=$OUT",
+)
