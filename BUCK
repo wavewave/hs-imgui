@@ -105,8 +105,45 @@ genrule(
 
 ### DEMO
 
+# imgui-splitter-demo
 
-# plot-demo
+genrule(
+    name = "build_imgui_splitter_demo",
+    srcs = glob(
+        ["examples/imgui-splitter-demo/**/*"],
+    ),
+    out = "imgui_splitter_demo",
+    cmd = '''
+       pushd examples/imgui-splitter-demo
+       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
+         --ghc-options="-framework OpenGL" \
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/
+       popd
+       cp -a examples/imgui-splitter-demo/dist-newstyle $OUT
+    ''',
+)
+
+genrule(
+    name = "imgui_splitter_demo_sh",
+    out = "imgui_splitter_demo.sh",
+    cmd = '''
+cat > $OUT <<EOF
+#!$BASH
+set -e
+cd \\`dirname "\\$0"\\`
+$(location :build_imgui_splitter_demo)/build/aarch64-osx/ghc-9.6.2/imgui-splitter-demo-0.1.0.0/x/imgui-splitter-demo/build/imgui-splitter-demo/imgui-splitter-demo
+EOF
+chmod +x $OUT
+    ''',
+)
+
+sh_binary(
+    name = "run_imgui_splitter_demo",
+    main = ":imgui_splitter_demo_sh",
+)
+
+# draw-demo
 
 genrule(
     name = "build_draw_demo",
