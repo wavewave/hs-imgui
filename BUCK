@@ -17,6 +17,20 @@ genrule(
 )
 
 genrule(
+    name = "build_imgui",
+    srcs = [
+        ":generate_imgui",
+    ],
+    out = "imgui",
+    cmd = '''
+       pushd imgui
+       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle --ghc-options="-framework OpenGL"
+       popd
+       cp -a imgui/dist-newstyle $OUT
+    ''',
+)
+
+genrule(
     name = "implot_gen",
     srcs = [
         "implot-gen/Gen.hs",
