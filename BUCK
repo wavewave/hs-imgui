@@ -56,7 +56,8 @@ genrule(
     out = "implot",
     cmd = '''
        pushd implot
-       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle --ghc-options="-framework OpenGL" --package-db=../$(location :build_imgui)/packagedb/ghc-9.6.2/
+       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
+         --package-db=../$(location :build_imgui)/packagedb/ghc-9.6.2/
        popd
        cp -a implot/dist-newstyle $OUT
     ''',
@@ -88,10 +89,28 @@ genrule(
     out = "implot3d",
     cmd = '''
        pushd implot3d
-       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle --ghc-options="-framework OpenGL" \
+       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
          --package-db=../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
          --package-db=../$(location :build_implot)/packagedb/ghc-9.6.2/
        popd
        cp -a implot3d/dist-newstyle $OUT
+    ''',
+)
+
+genrule(
+    name = "build_plot3d_demo",
+    srcs = glob(
+        ["examples/plot3d-demo/**/*"],
+    ),
+    out = "plot3d_demo",
+    cmd = '''
+       pushd examples/plot3d-demo
+       $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
+         --ghc-options="-framework OpenGL" \
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/ \
+         --package-db=../../$(location :build_implot3d)/packagedb/ghc-9.6.2/
+       popd
+       cp -a examples/plot3d-demo/dist-newstyle $OUT
     ''',
 )
