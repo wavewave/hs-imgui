@@ -140,11 +140,11 @@ imVec2 =
     []
     False
 
-------------------
--- start implot --
-------------------
+--
+-- from implot
+--
 
-cabal =
+implot_cabal =
   Cabal
     { cabal_pkgname = CabalName "implot",
       cabal_version = "1.0.0.0",
@@ -162,138 +162,132 @@ cabal =
       cabal_buildType = Simple
     }
 
-imPlotContext :: Class
-imPlotContext =
-  Class
-    cabal
-    "ImPlotContext"
-    []
-    mempty
-    Nothing
-    []
-    []
-    []
-    False
+------------------
+-- start implot3d --
+------------------
 
-imPlotFlags_ :: EnumType
-imPlotFlags_ =
-  EnumType
-    { enum_name = "ImPlotFlags_",
-      enum_cases =
-        [ "ImPlotFlags_None",
-          "ImPlotFlags_NoTitle",
-          "ImPlotFlags_NoLegend",
-          "ImPlotFlags_NoMouseText",
-          "ImPlotFlags_NoInputs",
-          "ImPlotFlags_NoMenus",
-          "ImPlotFlags_NoBoxSelect",
-          "ImPlotFlags_NoChild",
-          "ImPlotFlags_NoFrame",
-          "ImPlotFlags_Equal",
-          "ImPlotFlags_Crosshairs",
-          "ImPlotFlags_CanvasOnly"
-        ],
-      enum_header = "implot.h"
+cabal =
+  Cabal
+    { cabal_pkgname = CabalName "implot3d",
+      cabal_version = "1.0.0.0",
+      cabal_cheaderprefix = "ImPlot3D",
+      cabal_moduleprefix = "ImPlot3D",
+      cabal_additional_c_incs = [],
+      cabal_additional_c_srcs = [],
+      cabal_additional_pkgdeps = [CabalName "stdcxx", CabalName "imgui", CabalName "implot"],
+      cabal_license = Just "BSD-3-Clause",
+      cabal_licensefile = Just "LICENSE",
+      cabal_extraincludedirs = [],
+      cabal_extralibdirs = [],
+      cabal_extrafiles = [],
+      cabal_pkg_config_depends = ["libimplot3d"],
+      cabal_buildType = Simple
     }
 
-imPlotAxisFlags_ :: EnumType
-imPlotAxisFlags_ =
+imPlot3DFlags_ :: EnumType
+imPlot3DFlags_ =
   EnumType
-    { enum_name = "ImPlotAxisFlags_",
+    { enum_name = "ImPlot3DFlags_",
       enum_cases =
-        [ "ImPlotAxisFlags_None",
-          "ImPlotAxisFlags_NoLabel",
-          "ImPlotAxisFlags_NoGridLines",
-          "ImPlotAxisFlags_NoTickMarks",
-          "ImPlotAxisFlags_NoTickLabels",
-          "ImPlotAxisFlags_NoInitialFit",
-          "ImPlotAxisFlags_NoMenus",
-          "ImPlotAxisFlags_NoSideSwitch",
-          "ImPlotAxisFlags_NoHighlight",
-          "ImPlotAxisFlags_Opposite",
-          "ImPlotAxisFlags_Foreground",
-          "ImPlotAxisFlags_Invert",
-          "ImPlotAxisFlags_AutoFit",
-          "ImPlotAxisFlags_RangeFit",
-          "ImPlotAxisFlags_PanStretch",
-          "ImPlotAxisFlags_LockMin",
-          "ImPlotAxisFlags_LockMax",
-          "ImPlotAxisFlags_Lock",
-          "ImPlotAxisFlags_NoDecorations",
-          "ImPlotAxisFlags_AuxDefault"
+        [ "ImPlot3DFlags_None",
+          "ImPlot3DFlags_NoTitle",
+          "ImPlot3DFlags_NoLegend",
+          "ImPlot3DFlags_NoMouseText",
+          "ImPlot3DFlags_NoClip",
+          "ImPlot3DFlags_NoMenus",
+          "ImPlot3DFlags_Equal",
+          "ImPlot3DFlags_NoRotate",
+          "ImPlot3DFlags_NoPan",
+          "ImPlot3DFlags_NoZoom",
+          "ImPlot3DFlags_NoInputs",
+          "ImPlot3DFlags_CanvasOnly"
         ],
-      enum_header = "implot.h"
+      enum_header = "implot3d.h"
     }
 
-imPlotStyleVar_ :: EnumType
-imPlotStyleVar_ =
+imPlot3DAxisFlags_ :: EnumType
+imPlot3DAxisFlags_ =
   EnumType
-    { enum_name = "ImPlotStyleVar_",
+    { enum_name = "ImPlot3DAxisFlags_",
       enum_cases =
-        [ "ImPlotStyleVar_LineWeight",
-          "ImPlotStyleVar_Marker",
-          "ImPlotStyleVar_MarkerSize",
-          "ImPlotStyleVar_MarkerWeight",
-          "ImPlotStyleVar_FillAlpha",
-          "ImPlotStyleVar_ErrorBarSize",
-          "ImPlotStyleVar_ErrorBarWeight",
-          "ImPlotStyleVar_DigitalBitHeight",
-          "ImPlotStyleVar_DigitalBitGap",
-          "ImPlotStyleVar_PlotBorderSize",
-          "ImPlotStyleVar_MinorAlpha",
-          "ImPlotStyleVar_MajorTickLen",
-          "ImPlotStyleVar_MinorTickLen",
-          "ImPlotStyleVar_MajorTickSize",
-          "ImPlotStyleVar_MinorTickSize",
-          "ImPlotStyleVar_MajorGridSize",
-          "ImPlotStyleVar_MinorGridSize",
-          "ImPlotStyleVar_PlotPadding",
-          "ImPlotStyleVar_LabelPadding",
-          "ImPlotStyleVar_LegendPadding",
-          "ImPlotStyleVar_LegendInnerPadding",
-          "ImPlotStyleVar_MousePosPadding",
-          "ImPlotStyleVar_AnnotationPadding",
-          "ImPlotStyleVar_FitPadding",
-          "ImPlotStyleVar_PlotDefaultSize",
-          "ImPlotStyleVar_PlotMinSize",
-          "ImPlotStyleVar_COUNT"
+        [ "ImPlot3DAxisFlags_None",
+          "ImPlot3DAxisFlags_NoLabel",
+          "ImPlot3DAxisFlags_NoGridLines",
+          "ImPlot3DAxisFlags_NoTickMarks",
+          "ImPlot3DAxisFlags_NoTickLabels",
+          "ImPlot3DAxisFlags_LockMin",
+          "ImPlot3DAxisFlags_LockMax",
+          "ImPlot3DAxisFlags_AutoFit",
+          "ImPlot3DAxisFlags_Invert",
+          "ImPlot3DAxisFlags_PanStretch",
+          "ImPlot3DAxisFlags_Lock",
+          "ImPlot3DAxisFlags_NoDecorations"
         ],
-      enum_header = "implot.h"
+      enum_header = "implot3d.h"
     }
 
-classes =
-  [ imPlotContext
-  ]
+imPlot3DLineFlags_ :: EnumType
+imPlot3DLineFlags_ =
+  EnumType
+    { enum_name = "ImPlot3DLineFlags_",
+      enum_cases =
+        [ "ImPlot3DLineFlags_None",
+          "ImPlot3DLineFlags_NoLegend",
+          "ImPlot3DLineFlags_NoFit",
+          "ImPlot3DLineFlags_Segments",
+          "ImPlot3DLineFlags_Loop",
+          "ImPlot3DLineFlags_SkipNaN"
+        ],
+      enum_header = "implot3d.h"
+    }
+
+imPlot3DSurfaceFlags_ :: EnumType
+imPlot3DSurfaceFlags_ =
+  EnumType
+    { enum_name = "ImPlot3DSurfaceFlags_",
+      enum_cases =
+        [ "ImPlot3DSurfaceFlags_None",
+          "ImPlot3DSurfaceFlags_NoLegend",
+          "ImPlot3DSurfaceFlags_NoFit",
+          "ImPlot3DSurfaceFlags_NoLines",
+          "ImPlot3DSurfaceFlags_NoFill",
+          "ImPlot3DSurfaceFlags_NoMarkers"
+        ],
+      enum_header = "implot3d.h"
+    }
+
+classes = []
 
 enums =
-  [ imPlotFlags_,
-    imPlotAxisFlags_,
-    imPlotStyleVar_
+  [ imPlot3DFlags_,
+    imPlot3DAxisFlags_,
+    imPlot3DLineFlags_,
+    imPlot3DSurfaceFlags_
   ]
 
 toplevelfunctions :: [TopLevel]
 toplevelfunctions =
-  -- for now
-  [ TLOrdinary (TopLevelFunction FFIUnsafe void_ "CreateContext" [] (Just "createImPlotContext")),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showImPlotDemoWindow")),
-    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id"] (Just "beginPlot_")),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPlot" [] Nothing),
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", int "x_flags", int "y_flags"] Nothing),
-    -- style
-    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushStyleVar" [int "idx", cppclassref imVec2 "val"] (Just "PushStyleVar1")),
+  [ TLOrdinary (TopLevelFunction FFIUnsafe void_ "CreateContext" [] (Just "createContext")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showDemoWindow")),
+    TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] (Just "beginPlot3D")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPlot" [] (Just "EndPlot3D")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", cstring "z_label", int "x_flags", int "y_flags", int "z_flags"] (Just "setupAxes3D")),
     TLTemplate
       ( TopLevelTemplateFunction
           { topleveltfunc_safety = FFIUnsafe,
             topleveltfunc_params = ["t1"],
             topleveltfunc_ret = void_,
-            topleveltfunc_name = "plotLine",
-            topleveltfunc_oname = "ImPlot::PlotLine",
+            topleveltfunc_name = "plotLine3D",
+            topleveltfunc_oname = "ImPlot3D::PlotLine",
             topleveltfunc_args =
               [ cstring "label_id",
                 Arg (TemplateParamPointer "t1") "xs",
                 Arg (TemplateParamPointer "t1") "ys",
-                int "count"
+                Arg (TemplateParamPointer "t1") "zs",
+                int "count",
+                int "flags",
+                int "offset",
+                int "stride"
               ]
           }
       ),
@@ -302,16 +296,20 @@ toplevelfunctions =
           { topleveltfunc_safety = FFIUnsafe,
             topleveltfunc_params = ["t1"],
             topleveltfunc_ret = void_,
-            topleveltfunc_name = "plotLine1",
-            topleveltfunc_oname = "ImPlot::PlotLine",
+            topleveltfunc_name = "plotSurface",
+            topleveltfunc_oname = "ImPlot3D::PlotSurface",
             topleveltfunc_args =
               [ cstring "label_id",
-                Arg (TemplateParamPointer "t1") "values",
-                int "count",
-                double "xscale",
-                double "xstart",
+                Arg (TemplateParamPointer "t1") "xs",
+                Arg (TemplateParamPointer "t1") "ys",
+                Arg (TemplateParamPointer "t1") "zs",
+                int "x_count",
+                int "y_count",
+                double "scale_min",
+                double "scale_max",
                 int "flags",
-                int "offset"
+                int "offset",
+                int "stride"
               ]
           }
       )
@@ -322,13 +320,12 @@ templates = []
 headers =
   [ ( MU_TopLevel,
       ModuleUnitImports
-        { muimports_namespaces = ["ImPlot"],
+        { muimports_namespaces = ["ImPlot3D"],
           muimports_headers =
-            [ "implot.h"
+            [ "implot3d.h"
             ]
         }
-    ),
-    modImports "ImPlotContext" [] ["implot.h"]
+    )
   ]
 
 extraLib = []
@@ -379,12 +376,12 @@ main = do
       let fficfg =
             FFICXXConfig
               { fficxxconfig_workingDir = cwd </> "tmp" </> "working",
-                fficxxconfig_installBaseDir = cwd </> "implot",
+                fficxxconfig_installBaseDir = cwd </> "implot3d",
                 fficxxconfig_staticFileDir = tmplDir
               }
           sbcfg =
             SimpleBuilderConfig
-              { sbcTopModule = "ImPlot",
+              { sbcTopModule = "ImPlot3D",
                 sbcModUnitMap = ModuleUnitMap (HM.fromList headers),
                 sbcCabal = cabal,
                 sbcClasses = classes,

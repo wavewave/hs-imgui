@@ -1,3 +1,7 @@
 packages:
+  ./imgui
+  ./implot
+  ./implot3d
   ../examples/plot-demo
   ../examples/draw-demo
+  ../examples/plot3d-demo
