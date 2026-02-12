@@ -226,6 +226,31 @@ imPlot3DAxisFlags_ =
       enum_header = "implot3d.h"
     }
 
+imPlot3DColormap_ :: EnumType
+imPlot3DColormap_ =
+  EnumType
+    { enum_name = "ImPlot3DColormap_",
+      enum_cases =
+        [ "ImPlot3DColormap_Deep",
+          "ImPlot3DColormap_Dark",
+          "ImPlot3DColormap_Pastel",
+          "ImPlot3DColormap_Paired",
+          "ImPlot3DColormap_Viridis",
+          "ImPlot3DColormap_Plasma",
+          "ImPlot3DColormap_Hot",
+          "ImPlot3DColormap_Cool",
+          "ImPlot3DColormap_Pink",
+          "ImPlot3DColormap_Jet",
+          "ImPlot3DColormap_Twilight",
+          "ImPlot3DColormap_RdBu",
+          "ImPlot3DColormap_BrBG",
+          "ImPlot3DColormap_PiYG",
+          "ImPlot3DColormap_Spectral",
+          "ImPlot3DColormap_Greys"
+        ],
+      enum_header = "implot3d.h"
+    }
+
 imPlot3DLineFlags_ :: EnumType
 imPlot3DLineFlags_ =
   EnumType
@@ -261,6 +286,7 @@ classes = []
 enums =
   [ imPlot3DFlags_,
     imPlot3DAxisFlags_,
+    imPlot3DColormap_,
     imPlot3DLineFlags_,
     imPlot3DSurfaceFlags_
   ]
@@ -271,7 +297,9 @@ toplevelfunctions =
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "ShowDemoWindow" [star CTBool "p_open"] (Just "showDemoWindow")),
     TLOrdinary (TopLevelFunction FFIUnsafe bool_ "BeginPlot" [cstring "title_id", cppclassref imVec2 "size", int "flags"] (Just "beginPlot3D")),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "EndPlot" [] (Just "EndPlot3D")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "PushColormap" [int "cmap"] Nothing),
     TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxes" [cstring "x_label", cstring "y_label", cstring "z_label", int "x_flags", int "y_flags", int "z_flags"] (Just "setupAxes3D")),
+    TLOrdinary (TopLevelFunction FFIUnsafe void_ "SetupAxesLimits" [double "x_min", double "y_min", double "z_min", double "x_max", double "y_max", double "z_max"] Nothing),
     TLTemplate
       ( TopLevelTemplateFunction
           { topleveltfunc_safety = FFIUnsafe,
