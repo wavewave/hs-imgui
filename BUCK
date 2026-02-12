@@ -61,7 +61,7 @@ genrule(
     cmd = '''
        pushd implot
        $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
-         --package-db=../$(location :build_imgui)/packagedb/ghc-9.6.2/
+         --package-db=../$(location :build_imgui)/packagedb/ghc-9.6.7/
        popd
        cp -a implot/dist-newstyle $OUT
     ''',
@@ -96,8 +96,8 @@ genrule(
     cmd = '''
        pushd implot3d
        $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
-         --package-db=../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
-         --package-db=../$(location :build_implot)/packagedb/ghc-9.6.2/
+         --package-db=../$(location :build_imgui)/packagedb/ghc-9.6.7/ \
+         --package-db=../$(location :build_implot)/packagedb/ghc-9.6.7/
        popd
        cp -a implot3d/dist-newstyle $OUT
     ''',
@@ -117,8 +117,8 @@ genrule(
        pushd examples/imgui-splitter-demo
        $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
          --ghc-options="-framework OpenGL" \
-         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
-         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.7/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.7/
        popd
        cp -a examples/imgui-splitter-demo/dist-newstyle $OUT
     ''',
@@ -132,7 +132,7 @@ cat > $OUT <<EOF
 #!$BASH
 set -e
 cd \\`dirname "\\$0"\\`
-$(location :build_imgui_splitter_demo)/build/aarch64-osx/ghc-9.6.2/imgui-splitter-demo-0.1.0.0/x/imgui-splitter-demo/build/imgui-splitter-demo/imgui-splitter-demo
+$(location :build_imgui_splitter_demo)/build/aarch64-osx/ghc-9.6.7/imgui-splitter-demo-0.1.0.0/x/imgui-splitter-demo/build/imgui-splitter-demo/imgui-splitter-demo
 EOF
 chmod +x $OUT
     ''',
@@ -155,8 +155,8 @@ genrule(
        pushd examples/draw-demo
        $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
          --ghc-options="-framework OpenGL" \
-         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
-         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.7/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.7/
        popd
        cp -a examples/draw-demo/dist-newstyle $OUT
     ''',
@@ -170,7 +170,7 @@ cat > $OUT <<EOF
 #!$BASH
 set -e
 cd \\`dirname "\\$0"\\`
-$(location :build_draw_demo)/build/aarch64-osx/ghc-9.6.2/draw-demo-0.1.0.0/x/draw-demo/build/draw-demo/draw-demo
+$(location :build_draw_demo)/build/aarch64-osx/ghc-9.6.7/draw-demo-0.1.0.0/x/draw-demo/build/draw-demo/draw-demo
 EOF
 chmod +x $OUT
     ''',
@@ -193,8 +193,8 @@ genrule(
        pushd examples/plot-demo
        $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
          --ghc-options="-framework OpenGL" \
-         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
-         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.7/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.7/
        popd
        cp -a examples/plot-demo/dist-newstyle $OUT
     ''',
@@ -208,7 +208,7 @@ cat > $OUT <<EOF
 #!$BASH
 set -e
 cd \\`dirname "\\$0"\\`
-$(location :build_plot_demo)/build/aarch64-osx/ghc-9.6.2/plot-demo-0.1.0.0/x/plot-demo/build/plot-demo/plot-demo
+$(location :build_plot_demo)/build/aarch64-osx/ghc-9.6.7/plot-demo-0.1.0.0/x/plot-demo/build/plot-demo/plot-demo
 EOF
 chmod +x $OUT
     ''',
@@ -231,9 +231,9 @@ genrule(
        pushd examples/plot3d-demo
        $(exe_target @toolchains//:cabal) build --builddir=dist-newstyle \
          --ghc-options="-framework OpenGL" \
-         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.2/ \
-         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.2/ \
-         --package-db=../../$(location :build_implot3d)/packagedb/ghc-9.6.2/
+         --package-db=../../$(location :build_imgui)/packagedb/ghc-9.6.7/ \
+         --package-db=../../$(location :build_implot)/packagedb/ghc-9.6.7/ \
+         --package-db=../../$(location :build_implot3d)/packagedb/ghc-9.6.7/
        popd
        cp -a examples/plot3d-demo/dist-newstyle $OUT
     ''',
@@ -247,7 +247,7 @@ cat > $OUT <<EOF
 #!$BASH
 set -e
 cd \\`dirname "\\$0"\\`
-$(location :build_plot3d_demo)/build/aarch64-osx/ghc-9.6.2/plot3d-demo-0.1.0.0/x/plot3d-demo/build/plot3d-demo/plot3d-demo
+$(location :build_plot3d_demo)/build/aarch64-osx/ghc-9.6.7/plot3d-demo-0.1.0.0/x/plot3d-demo/build/plot3d-demo/plot3d-demo
 EOF
 chmod +x $OUT
     ''',
