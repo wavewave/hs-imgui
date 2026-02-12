@@ -1,8 +1,12 @@
 {
   description = "hs-imgui";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/25.05";
     flake-utils.url = "github:numtide/flake-utils";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixGL = {
       url = "github:guibou/nixGL/main";
       inputs = {
@@ -20,25 +24,31 @@
     self,
     nixpkgs,
     flake-utils,
+    fenix,
     nixGL,
     fficxx,
   }: let
     overlay = self: super: {
       imgui = self.callPackage ./nix/imgui/default.nix {
-        frameworks = self.darwin.apple_sdk.frameworks;
+        #frameworks = self.darwin.apple_sdk.frameworks;
       };
       implot = self.callPackage ./nix/implot/default.nix {
-        frameworks = self.darwin.apple_sdk.frameworks;
+        #frameworks = self.darwin.apple_sdk.frameworks;
       };
       implot3d = self.callPackage ./nix/implot3d/default.nix {
-        frameworks = self.darwin.apple_sdk.frameworks;
+        #frameworks = self.darwin.apple_sdk.frameworks;
+      };
+      buck2 = self.callPackage ./nix/buck2/default.nix {
       };
     };
   in
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [overlay];
+        overlays = [
+          fenix.overlays.default
+          overlay
+        ];
       };
 
       haskellOverlay = final: hself: hsuper:
@@ -76,13 +86,14 @@
           buildInputs =
             [
               hsenv
+              pkgs.buck2
               pkgs.cabal-install
               pkgs.imgui
               pkgs.implot
               pkgs.implot3d
               pkgs.glfw
               pkgs.alejandra
-              pkgs.pkgconfig
+              pkgs.pkg-config
               pkgs.graphviz
               pkgs.ormolu
             ]
@@ -96,17 +107,17 @@
 	    ++ pkgs.lib.optional (pkgs.stdenv.isLinux && !pkgs.lib.inPureEvalMode) nixGL.packages.${system}.default
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
             [
-              pkgs.darwin.apple_sdk.frameworks.Cocoa
-              pkgs.darwin.apple_sdk.frameworks.Metal
-              pkgs.darwin.apple_sdk.frameworks.MetalKit
+              #pkgs.darwin.apple_sdk.frameworks.Cocoa
+              #pkgs.darwin.apple_sdk.frameworks.Metal
+              #pkgs.darwin.apple_sdk.frameworks.MetalKit
             ];
           shellHook = ''
             export PS1="\n[${prompt}:\w]$ \0"
           '';
         };
 
-      supportedCompilers = ["ghc962"];
-      defaultCompiler = "ghc962";
+      supportedCompilers = ["ghc967"];
+      defaultCompiler = "ghc967";
     in rec {
       inherit overlay;
       inherit haskellOverlay;
@@ -114,7 +125,7 @@
       packages =
         pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler)
         // {
-          inherit (pkgs) imgui implot;
+          inherit (pkgs) imgui implot buck2;
         };
 
       devShells =

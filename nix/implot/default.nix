@@ -3,7 +3,7 @@
   lib,
   fetchFromGitHub,
   pkg-config,
-  frameworks,
+  #frameworks,
   imgui,
   glfw,
   libGL ? null,
@@ -29,9 +29,9 @@ stdenv.mkDerivation rec {
     ++ (
       if stdenv.isDarwin
       then [
-        frameworks.Cocoa
-        frameworks.Metal
-        frameworks.MetalKit
+        #frameworks.Cocoa
+        #frameworks.Metal
+        #frameworks.MetalKit
       ]
       else [libGL]
     );
