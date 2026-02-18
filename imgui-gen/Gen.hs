@@ -1201,7 +1201,7 @@ extraLib = []
 extraDep = []
 
 data CLIMode
-  = Gen (Maybe FilePath)
+  = Gen (Maybe FilePath) (Maybe FilePath)
   | DepGraph (Maybe FilePath)
 
 genMode :: OA.Mod OA.CommandFields CLIMode
@@ -1211,6 +1211,8 @@ genMode =
       ( Gen
           <$> OA.optional
             (OA.strOption (OA.long "template" <> OA.short 't' <> OA.help "template directory"))
+          <*> OA.optional
+            (OA.strOption (OA.long "output" <> OA.short 't' <> OA.help "output directory"))
       )
       (OA.progDesc "Generate source code")
 
@@ -1234,13 +1236,13 @@ main :: IO ()
 main = do
   mode <- OA.execParser optsParser
   case mode of
-    Gen mtmplDir -> do
+    Gen mtmplDir moutput -> do
       let tmplDir = fromMaybe "../template" mtmplDir
       cwd <- getCurrentDirectory
       let fficfg =
             FFICXXConfig
               { fficxxconfig_workingDir = cwd </> "tmp" </> "working",
-                fficxxconfig_installBaseDir = cwd </> "imgui",
+                fficxxconfig_installBaseDir = fromMaybe (cwd </> "imgui") moutput,
                 fficxxconfig_staticFileDir = tmplDir
               }
           sbcfg =

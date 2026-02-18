@@ -1,0 +1,19 @@
+load("@prelude//toolchains:genrule.bzl", "system_genrule_toolchain")
+load(":impure_runinfo.bzl", "impure_runinfo")
+
+system_genrule_toolchain(
+    name = "genrule",
+    visibility = ["PUBLIC"],
+)
+
+impure_runinfo(
+    name = "ghc",
+    executable = "ghc",
+    visibility = ["PUBLIC"],
+)
+
+impure_runinfo(
+    name = "cabal",
+    executable = "cabal",
+    visibility = ["PUBLIC"],
+)
